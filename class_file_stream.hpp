@@ -17,7 +17,8 @@ class Classfile_stream{
         _path = path;
     };
     public:
-    u4 get_u4();
-    u2 get_u2();
-    u1 get_u1();
+    u4 getu4();
+    u2 getu2();
+    u1 getu1();
+    u1 * get_current();
 };

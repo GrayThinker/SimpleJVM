@@ -4,5 +4,5 @@
 #include <iostream>
 
 class Java_class : Java_classfile_format{
-
+    // TODO: implement java class?
 };

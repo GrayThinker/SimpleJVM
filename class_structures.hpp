@@ -1,9 +1,10 @@
 #pragma once
+#include <iostream>
 #include "java_class_types.hpp"
 
-struct cp_info{
+struct cp_info{  //for reference only, use cp_entry
     u1 tag;
-    u1 *info;  //array size depends on tag
+    u1 *info;
 };
 
 struct attribute_info{
@@ -35,27 +36,7 @@ struct exception{
     u2 catch_type;
 };
 
-struct Java_classfile_format{
-    u4 magic;
-    u2 minor_version;
-    u2 major_version;
-    u2 constant_pool_count;
-    cp_info *constant_pool;  //[constant_pool_count -1]
-    u2 access_flags;
-    u2 this_class;
-    u2 super_class;
-    u2 interfaces_count;
-    u2 *interfaces;  //[interfaces_count]
-    u2 fields_count;
-    field_info *fields;  //[fields_count]
-    u2 methods_count;
-    method_info *methods;  //[methods_count;
-    u2 attribute_count;
-    attribute_info attributes;  //[attributes_count]
-};
-
 //------------------------------------------------------------
-
 struct CONSTANT_Class_info{
     u1 tag;
     u2 name_index;
@@ -135,6 +116,34 @@ struct CONSTANT_InvokeDynamic_info{
     u2 name_and_type_index;
 };
 
+/*
+ *The union is only as big as necessary to hold its largest data member. 
+ *The other data members are allocated in the same bytes as part of that largest member. 
+ *The details of that allocation are implementation-defined but all 
+ *non-static data members will have the same address (since C++14).
+ */
+struct cp_entry{
+    public:
+    u4 index;
+    u1 tag; 
+    union {
+        CONSTANT_Class_info c_class;
+        CONSTANT_Fieldref_info c_fieldref;
+        CONSTANT_Methodref_info c_methodref;
+        CONSTANT_InterfaceMethodref_info c_interfacemethodref;
+        CONSTANT_String_info c_string;
+        CONSTANT_Integer_info c_integer;
+        CONSTANT_Float_info c_float;
+        CONSTANT_Long_info c_long;
+        CONSTANT_Double_info c_double;
+        CONSTANT_NameAndType_info c_nameandtype;
+        CONSTANT_Utf8_info c_utf8;
+        CONSTANT_MethodHandle_info c_methodhandle;
+        CONSTANT_MethodType_info c_methodtype;
+        CONSTANT_InvokeDynamic_info c_invokedynamic;
+    };
+};
+
 //------------------------------------------------------------
 
 struct ConstantValue_attribute{
@@ -188,7 +197,7 @@ struct UninitializedThis_variable_info{
 
 struct Object_variable_info{
     u1 tag = ITEM_Object;  //7
-    u2 cpool_index;
+    u2 cp_index;
 };
 
 struct Uninitialized_variable_info{
@@ -266,4 +275,24 @@ struct StackMapTable_attribute{
     u4 attribute_length;
     u2 number_of_entries;
     stack_map_frame entries; //[number_of_entries];
+};
+
+//------------------------------------------------------------
+struct Java_classfile_format{
+    u4 magic;
+    u2 minor_version;
+    u2 major_version;
+    u2 constant_pool_count;
+    cp_entry *constant_pool;  //[constant_pool_count -1]
+    u2 access_flags;
+    u2 this_class;
+    u2 super_class;
+    u2 interfaces_count;
+    u2 *interfaces;  //[interfaces_count]
+    u2 fields_count;
+    field_info *fields;  //[fields_count]
+    u2 methods_count;
+    method_info *methods;  //[methods_count;
+    u2 attribute_count;
+    attribute_info attributes;  //[attributes_count]
 };
