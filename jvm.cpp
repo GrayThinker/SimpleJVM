@@ -16,6 +16,7 @@ void print_info(){
 }
 
 int main(int argc, char **argv){
+    //TODO: timing
     const char *classfile_path;
     if (argc < 2){
         classfile_path = ".\\test\\MyClass.class";
