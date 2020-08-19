@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "java_class_types.hpp"
+//TODO: rename to java_class_structures
 
 struct cp_info{  //for reference only, use cp_entry
     u1 tag;
@@ -284,6 +285,25 @@ struct Java_classfile_format{
     u2 major_version;
     u2 constant_pool_count;
     cp_entry *constant_pool;  //[constant_pool_count -1]
+    u2 access_flags;
+    u2 this_class;
+    u2 super_class;
+    u2 interfaces_count;
+    u2 *interfaces;  //[interfaces_count]
+    u2 fields_count;
+    field_info *fields;  //[fields_count]
+    u2 methods_count;
+    method_info *methods;  //[methods_count;
+    u2 attribute_count;
+    attribute_info attributes;  //[attributes_count]
+};
+
+struct Parseclass_format{
+    u4 magic;
+    u2 minor_version;
+    u2 major_version;
+    u2 constant_pool_count;
+    cp_info **constant_pool;  //[constant_pool_count -1]
     u2 access_flags;
     u2 this_class;
     u2 super_class;
