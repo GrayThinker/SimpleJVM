@@ -29,7 +29,6 @@ int main(int argc, char **argv){
 
     Parseclass *p_class = new Parseclass;
     p_class->parse(code_stream);
-    p_class->print_cp();
 
     // code_stream = load_stream(classfile_path);
     // Java_class *j_class;

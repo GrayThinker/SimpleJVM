@@ -4,7 +4,7 @@
 #include "class_file_stream.hpp"
 #include <iostream>
 
-cp_info **Parseclass::parse_cp(u1 *cp_handle){
+void Parseclass::parse_cp(u1 *cp_handle){
     int cps_cur = 0;
     cp_info **constant_pool = new cp_info*[constant_pool_count];
     
@@ -55,7 +55,8 @@ cp_info **Parseclass::parse_cp(u1 *cp_handle){
         }
     }
     _current += cps_cur;
-    return constant_pool; //change name
+    Parseclass::constant_pool = constant_pool; //change name
+    // change to return true or false
 }
 
 void Parseclass::print_cp(){
@@ -119,15 +120,69 @@ void Parseclass::print_cp(){
     }
 }
 
-field_info *Parseclass::parse_fields(u1 *field_handle){
+void Parseclass::parse_fields(u1 *field_handle){
+    int fp = 0;
+    field_info * temp_fields = new field_info[fields_count];
+    for (int i = 0; i < fields_count; ++i){
+        temp_fields[i].access_flags = get_u2(field_handle + fp); fp += size_u2;
+        temp_fields[i].name_index = get_u2(field_handle + fp); fp += size_u2;
+        temp_fields[i].attributes_count = get_u2(field_handle + fp); fp += size_u2;
 
+        if (temp_fields[i].attributes_count > 0){ // TODO: move to function
+            attribute_info * temp_attributes = new attribute_info[temp_fields[i].attributes_count];
+            for (int j = 0; j < temp_fields[i].attributes_count; ++j){
+                temp_attributes[j].attribute_name_index = get_u2(field_handle + fp); fp += size_u2;
+                temp_attributes[j].attribute_length = get_u4(field_handle + fp); fp += size_u4;
+                temp_attributes[j].info = new u1[temp_attributes[j].attribute_length];
+                temp_attributes[j].info = field_handle + fp; fp += temp_attributes[j].attribute_length;
+            }
+            temp_fields[i].attributes = temp_attributes;
+        }
+    }
+    _current += fp;
+    fields = temp_fields;
 }
 
-method_info *Parseclass::parse_methods(u1 *method_handle){
+void Parseclass::parse_methods(u1 *method_handle){
+    int mp = 0;
+    method_info * temp_methods = new method_info[methods_count];
+    for (int i = 0; i < methods_count; ++i){
+        temp_methods[i].access_flags = get_u2(method_handle + mp); mp += size_u2;
+        temp_methods[i].name_index = get_u2(method_handle + mp); mp += size_u2;
+        temp_methods[i].descriptor_index = get_u2(method_handle + mp); mp += size_u2;
+        temp_methods[i].attributes_count = get_u2(method_handle + mp); mp += size_u2;
 
+        if (temp_methods[i].attributes_count > 0){ // TODO: move to function
+            attribute_info * temp_attributes = new attribute_info[temp_methods[i].attributes_count];
+            for (int j = 0; j < temp_methods[i].attributes_count; ++j){
+                temp_attributes[j].attribute_name_index = get_u2(method_handle + mp); mp += size_u2;
+                temp_attributes[j].attribute_length = get_u4(method_handle + mp); mp += size_u4;
+                temp_attributes[j].info = new u1[temp_attributes[j].attribute_length];
+                temp_attributes[j].info = method_handle + mp; mp += temp_attributes[j].attribute_length;
+            }
+
+            temp_methods[i].attributes = temp_attributes;
+        }
+    }
+    _current += mp;
+    methods = temp_methods;
 }
 
-attribute_info *Parseclass::parse_attributes(u1 *attribute_handle){
+void Parseclass::parse_attributes(u1 *attribute_handle){
+    int ap = 0;
+    attribute_info * temp_attributes = new attribute_info[attributes_count];
+    for (int i = 0; i < attributes_count; ++i){
+        temp_attributes[i].attribute_name_index = get_u2(attribute_handle + ap); ap += size_u2;        
+        temp_attributes[i].attribute_length = get_u4(attribute_handle + ap); ap += size_u4;
+        temp_attributes[i].info = new u1[temp_attributes[i].attribute_length];
+        temp_attributes[i].info= attribute_handle + ap; ap += temp_attributes[i].attribute_length;
+        // In case above doesn't work
+        // for (int j = 0; j <temp_attributes[i].attribute_length; ++j){
+        //     temp_attributes[i].info[j] = get_u1(attribute_handle + ap); ap += size_u1;
+        // }
+    }
+    _current += ap;
+    attributes = temp_attributes;
 
 }
 
@@ -136,10 +191,10 @@ void Parseclass::parse(Classfile_stream *classfile){
     magic = classfile->getu4(); _current += size_u4;
     minor_version = classfile->getu2(); _current += size_u2;
     major_version = classfile->getu2(); _current += size_u2;
-    constant_pool_count = classfile->getu2(); _current += size_u2;
     
+    constant_pool_count = classfile->getu2(); _current += size_u2;
     if (constant_pool_count > 0){
-        constant_pool = parse_cp(classfile->get_current());
+        parse_cp(classfile->get_current());
         classfile->set_offset(_current);
     }
 
@@ -158,22 +213,19 @@ void Parseclass::parse(Classfile_stream *classfile){
     fields_count = classfile->getu2(); _current += size_u2;
 
     if (fields_count > 0){
-        fields = parse_fields(classfile->get_current());
+        parse_fields(classfile->get_current());
         classfile->set_offset(_current);
     }
-
+    
     methods_count = classfile->getu2(); _current += size_u2;
-
     if (methods_count > 0){
-        methods = parse_methods(classfile->get_current());
+        parse_methods(classfile->get_current());
         classfile->set_offset(_current);
     }
-
+    
     attributes_count = classfile->getu2(); _current += size_u2;
-
     if (attributes_count > 0){
-        attributes = parse_attributes(classfile->get_current());
+        parse_attributes(classfile->get_current());
         classfile->set_offset(_current);
     }
-
 }
