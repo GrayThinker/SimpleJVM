@@ -313,6 +313,6 @@ struct Parseclass_format{
     field_info *fields;  //[fields_count]
     u2 methods_count;
     method_info *methods;  //[methods_count;
-    u2 attribute_count;
-    attribute_info attributes;  //[attributes_count]
+    u2 attributes_count;
+    attribute_info *attributes;  //[attributes_count]
 };

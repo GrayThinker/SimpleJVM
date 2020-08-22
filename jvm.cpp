@@ -2,8 +2,8 @@
 #include "class_file_stream.hpp"
 #include "java_class_types.hpp"
 #include "class_parser.hpp"
-#include "utils.hpp"
 #include "class_parser2.hpp"
+#include "utils.hpp"
 #include <iostream>
 // #include "java_class.hpp"
 
@@ -30,12 +30,10 @@ int main(int argc, char **argv){
     Parseclass *p_class = new Parseclass;
     p_class->parse(code_stream);
     p_class->print_cp();
-    
-    //FIXME: doesn't end properly
-    
-    Java_class *j_class;
-    j_class->parse_class(code_stream);
-    std::cout<<j_class->constant_pool_count<<std::endl;
-    j_class->print_cp();
+
+    // code_stream = load_stream(classfile_path);
+    // Java_class *j_class;
+    // j_class->parse_class(code_stream);
+    // j_class->print_cp();
     
 }

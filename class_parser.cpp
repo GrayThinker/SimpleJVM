@@ -122,6 +122,7 @@ cp_entry * Java_class::parse_constant_pool_entries(u1 *cp_handle, u2 cp_length){
 }
 
 void Java_class::print_cp(){  //FIXME: DRY
+    std::cout<<"Parser 1"<<std::endl;
     for (int i = 0; i < constant_pool_count; ++i){
     switch(constant_pool[i].tag){
         case CONSTANT_Class:  //{?

@@ -10,15 +10,12 @@ class Classfile_stream{
     const char *_path;
 
     public:
-    Classfile_stream(const char *path, u1 *source, int length){
-        _start = source;
-        _current = source;
-        _size = length;
-        _path = path;
-    };
-    public:
+    Classfile_stream(const char *path, u1 *source, int length);
     u4 getu4();
     u2 getu2();
     u1 getu1();
     u1 * get_current();
+    int get_offset();
+    void set_offset(int offset);
+    void set_current(u1* current);
 };
