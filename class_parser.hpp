@@ -1,5 +1,5 @@
 #pragma once
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 #include "class_file_stream.hpp"
 #include "class_structures.hpp"
 #include "java_class.hpp"

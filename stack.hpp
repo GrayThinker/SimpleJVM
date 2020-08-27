@@ -1,5 +1,6 @@
+#pragma once
 #include <stdlib.h>
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 
 class Stack{
     private:
@@ -8,39 +9,16 @@ class Stack{
     u4* stack;
 
     public:
-    Stack(){
-        sp = 0;
-        stack = new u4[stack_size];
-    };
+    Stack();
+    virtual ~Stack();  
 
-    virtual ~Stack(){
-        delete stack;
-    };
-    
-    int get_sp(){
-        return sp;
-    }
-    u4 read_stack(){
-        return stack[sp];
-    }
-
-    void push_stack(u4 input){ //Template needed
-        stack[sp++] = input;
-    }
-
-    u4 pop_stack(){
-        return stack[sp--];
-    }
-
-    void inc_sp(int i = 1){
-        sp += i;
-        //check if sp < stack-size
-    }
-
-    void dec_sp(int i = 1){
-        sp -= i;
-        //check if sp > 0
-    }
-
+    u4 peek();
+    u4 pop();
+    void push(u4 input);
+    void inc(unsigned int i = 1);
+    void dec(unsigned int i = 1);
+    int get_sp();
+    void set_sp(int new_p);
+    void _goto(unsigned int i);
 
 };

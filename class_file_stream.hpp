@@ -1,5 +1,5 @@
 #pragma once
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 
 class Classfile_stream{
     private:
@@ -11,6 +11,7 @@ class Classfile_stream{
 
     public:
     Classfile_stream(const char *path, u1 *source, int length);
+    virtual ~Classfile_stream();
     u4 getu4();
     u2 getu2();
     u1 getu1();

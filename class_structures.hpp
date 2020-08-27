@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 //TODO: rename to java_class_structures
 
 struct cp_info{  //for reference only, use cp_entry

@@ -1,7 +1,7 @@
 #include <iomanip>
 #include <iostream>
 #include "utils.hpp"
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 
 void printh(int output){
     std::cout<< std::setw(8) << std::setfill('0') << std::hex <<output<<std::endl;

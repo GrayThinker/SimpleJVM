@@ -1,4 +1,4 @@
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 #include "class_structures.hpp"
 #include "class_parser2.hpp"
 #include "class_file_stream.hpp"
@@ -189,8 +189,10 @@ void Parseclass::parse_attributes(u1 *attribute_handle){
 void Parseclass::parse(Classfile_stream *classfile){
     _current = classfile->get_offset();
     magic = classfile->getu4(); _current += size_u4;
+    // magic check
     minor_version = classfile->getu2(); _current += size_u2;
     major_version = classfile->getu2(); _current += size_u2;
+    // version check
     
     constant_pool_count = classfile->getu2(); _current += size_u2;
     if (constant_pool_count > 0){
@@ -200,7 +202,7 @@ void Parseclass::parse(Classfile_stream *classfile){
 
     access_flags = classfile->getu2(); _current += size_u2;
     this_class = classfile->getu2(); _current += size_u2;
-    super_class = classfile->getu2(); _current += size_u2;
+    super_class = classfile->getu2(); _current += size_u2; 
     interfaces_count = classfile->getu2(); _current += size_u2;
 
     if (interfaces_count > 0){ //maybe give it its own function

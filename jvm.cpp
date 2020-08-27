@@ -1,6 +1,6 @@
 #include "class_loader.hpp"
 #include "class_file_stream.hpp"
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 #include "class_parser.hpp"
 #include "class_parser2.hpp"
 #include "utils.hpp"

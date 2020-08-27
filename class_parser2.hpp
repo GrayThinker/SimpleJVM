@@ -1,7 +1,7 @@
 #pragma once
 #include "class_structures.hpp"
 #include "class_file_stream.hpp"
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 #include <iostream>
 
 class Parseclass : public Parseclass_format {

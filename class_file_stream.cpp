@@ -1,5 +1,5 @@
 #include "class_file_stream.hpp"
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 
 // TODO: implement java class file stream to by used by the parser.
 Classfile_stream::Classfile_stream(const char *path, u1 *source, int length){
@@ -9,6 +9,8 @@ Classfile_stream::Classfile_stream(const char *path, u1 *source, int length){
     _path = path;
     _offset = 0;
 }
+
+Classfile_stream::~Classfile_stream(){}
 
 u4 Classfile_stream::getu4(){   
     u4 output = (u4)((u4)((_current)[0]<<24) & 0xFF000000 | (u4)((_current)[1]<<16) & 0x00FF0000 | (u4)((_current)[2]<<8) & 0x0000FF00| (u4)((_current)[3]) & 0x000000FF);
