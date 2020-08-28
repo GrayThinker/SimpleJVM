@@ -1,6 +1,6 @@
 #include <fstream>
 #include "class_loader.hpp"
-#include "java_class_types.hpp"
+#include "class_types.hpp"
 #include "class_file_stream.hpp"
 
 int get_classfile_size(const char * file){
@@ -24,4 +24,8 @@ Classfile_stream *load_stream(const char* classfile_path){
     u1 *code_stream =  new u1[classfile_size];
     open_classfile(classfile_path, classfile_size, code_stream); // change to create classfilestream object;
     return new Classfile_stream(classfile_path, code_stream, classfile_size);
+}
+
+void close_stream(Classfile_stream * stream){
+    
 }

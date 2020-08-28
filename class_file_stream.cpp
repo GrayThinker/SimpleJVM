@@ -1,17 +1,23 @@
 #include "class_file_stream.hpp"
 #include "class_types.hpp"
+#include <fstream>
 
 // TODO: implement java class file stream to by used by the parser.
-Classfile_stream::Classfile_stream(const char *path, u1 *source, int length){
-    _start = source;
-    _current = source;
-    _size = length;
+Classfile_stream::Classfile_stream(const char *path){
     _path = path;
-    _offset = 0;
+    get_size();
+    _begin = new u1[_size];
+    open();
+    _current = _begin;
+    _offset = _current - _begin;
 }
 
-Classfile_stream::~Classfile_stream(){}
+Classfile_stream::~Classfile_stream(){
+    delete _begin;
+    delete _current;
+}
 
+// change to read
 u4 Classfile_stream::getu4(){   
     u4 output = (u4)((u4)((_current)[0]<<24) & 0xFF000000 | (u4)((_current)[1]<<16) & 0x00FF0000 | (u4)((_current)[2]<<8) & 0x0000FF00| (u4)((_current)[3]) & 0x000000FF);
     _current += size_u4;
@@ -43,10 +49,25 @@ int Classfile_stream::get_offset(){
 
 void Classfile_stream::set_offset(int offset){
     _offset = offset;
-    _current = _start + offset;
+    _current = _begin + offset;
 }
 
 void Classfile_stream::set_current(u1* current){
     _current = current;
-    _offset = _current - _start;
+    _offset = _current - _begin;
+}
+
+void Classfile_stream::open(){
+    FILE *temp = fopen(_path, "rb");
+    fread(_begin, _size, 1, temp);
+    fclose(temp);
+ 
+}
+
+void Classfile_stream::get_size(){
+    FILE *temp = fopen(_path, "rb");
+    fseek(temp, 0L, SEEK_END);
+    _size = ftell(temp);
+    fclose(temp);
+
 }

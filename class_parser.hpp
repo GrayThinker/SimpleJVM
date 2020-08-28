@@ -1,23 +1,19 @@
 #pragma once
-#include "class_types.hpp"
-#include "class_file_stream.hpp"
 #include "class_structures.hpp"
-#include "java_class.hpp"
+#include "class_file_stream.hpp"
+#include "class_types.hpp"
 #include <iostream>
-class Java_class : public Java_classfile_format {
-    public:
-    void parse_class(Classfile_stream *classfile);
-    //constant pool parsing
-    cp_entry * parse_constant_pool_entries(u1 *cp_handle, u2 cp_length);
+
+class Parseclass : public Parseclass_format {
+    public:  // change to constructor
+    int _current;
+
+    // should they take class members as functions or modify them directly
+    Parseclass(Classfile_stream *classfile);
+    ~Parseclass();
+    void parse_cp(u1 *cp_handle);
     void print_cp();
-    u1 * parse_constant_pool();
-    // interface parsing    
-    u2 * parse_interfaces();
-    // field parsing
-    void parse_field_attr();
-    void parse_fields();
-    // method parsing
-    void parse_methods_ls();
-    void parse_method();
-    void parse_exception_table();
+    void parse_fields(u1 *field_handle);
+    void parse_methods(u1 *method_handle);
+    void parse_attributes(u1 *attribute_handle);
 };
