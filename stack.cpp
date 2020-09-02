@@ -2,7 +2,7 @@
 #include "class_types.hpp"
 #include "stack.hpp"
 
-Stack::Stack(){
+Stack::Stack(int stack_size){
     sp = 0;
     stack = new u4[stack_size];
 }

@@ -316,3 +316,16 @@ struct Parseclass_format{
     u2 attributes_count;
     attribute_info *attributes;  //[attributes_count]
 };
+
+struct code_attribute{
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 max_stack;
+    u2 max_locals;
+    u4 code_length;
+    u1* code;
+    u2 exception_table_length;
+    exception exception_table;
+    u2 attributes_count;
+    attribute_info * attributes;
+};

@@ -23,4 +23,5 @@ class Classfile_stream{
     void set_current(u1* current);
     void get_size();
     void open();
+    const char * path();
 };

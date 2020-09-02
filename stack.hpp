@@ -9,7 +9,7 @@ class Stack{
     u4* stack;
 
     public:
-    Stack();
+    Stack(int stack_size);
     virtual ~Stack();  
 
     u4 peek();

@@ -71,3 +71,7 @@ void Classfile_stream::get_size(){
     fclose(temp);
 
 }
+
+const char * Classfile_stream::path(){
+    return _path;
+}
