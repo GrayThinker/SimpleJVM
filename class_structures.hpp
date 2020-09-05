@@ -330,3 +330,8 @@ struct code_attribute : attribute_info{
     u2 attributes_count;
     attribute_info * attributes;
 };
+
+
+struct ConstantValue : attribute_info {
+    u2 constantvalue_index;
+};

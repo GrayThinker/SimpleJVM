@@ -13,7 +13,7 @@ class Parseclass : public Parseclass_format {
     ~Parseclass();
     void parse_cp(u1 *cp_handle);
     void print_cp();
-    void parse_fields(u1 *field_handle);
-    void parse_methods(u1 *method_handle);
-    void parse_attributes(u1 *attribute_handle);
+    int parse_fields(u1 *field_handle, field_info * field);
+    int parse_methods(u1 *method_handle, method_info* method);
+    int parse_attributes(u1 *attribute_handle, attribute_info* attribute);
 };

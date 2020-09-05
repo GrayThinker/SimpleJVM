@@ -10,3 +10,12 @@ void printh(int output){
 void printi(int output){
     std::cout<<output<<std::endl;
 }
+
+std::string to_utf(u1* input, u2 length, std::string output){
+
+    for (int i = 0; i < length; ++i){
+        u1 cur = input[i];
+
+    }
+    return output;
+}

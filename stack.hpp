@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "class_types.hpp"
 
+
 class Stack{
     private:
     int sp;

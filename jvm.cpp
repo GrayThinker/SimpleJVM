@@ -20,7 +20,7 @@ int main(int argc, char **argv){
     //TODO: timing
     const char *classfile_path;
     if (argc < 2){
-        classfile_path = ".\\test\\test1.class";
+        classfile_path = ".\\test\\test2.class";
     }
     // if (strcmp(argv[1], "-i") == 0){
     //     print_info();
