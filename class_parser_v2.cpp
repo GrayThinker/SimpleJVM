@@ -1,6 +1,5 @@
-#include "class_parser.hpp"
+#include "class_parser_v2.hpp"
 #include "class_structures.hpp"
-// #include "java_class.hpp"
 #include <iostream>
 
 cp_entry * Java_class::parse_constant_pool_entries(u1 *cp_handle, u2 cp_length){  //TODO: error check, return BOOL
@@ -193,16 +192,36 @@ void Java_class::print_cp(){  //FIXME: DRY
     }
 }
 
+void Java_class::parse_methods_ls(u1 * method_handle, u2 methods_count){
+    int mp = 0;
+    method_info temp_method;
+    temp_method.access_flags = get_u2(method_handle + mp); mp += size_u2;
+    temp_method.name_index = get_u2(method_handle + mp); mp += size_u2;
+    temp_method.descriptor_index = get_u2(method_handle + mp); mp += size_u2;
+    temp_method.attributes_count = get_u2(method_handle + mp); mp += size_u2;
+    temp_method.attributes = new attribute_info[temp_method.attributes_count];
+    temp_method.attributes = parse_method_attr(method_handle + mp); // inc mp
+
+
+}
+
 void Java_class::parse_class(Classfile_stream *classfile){
     magic = classfile->getu4();
     minor_version = classfile->getu2();
     major_version = classfile->getu2();
+    // version verification: verify(min_ver, max_ver);
     constant_pool_count = classfile->getu2();
     constant_pool = parse_constant_pool_entries(classfile->get_current(), constant_pool_count);
     access_flags = classfile->getu2();
     this_class = classfile->getu2();
     super_class = classfile->getu2();
     interfaces_count = classfile->getu2();
-    // interfaces = parse_interfaces();
-    // ...
+    // interfaces = parse_interfaces(interface_handle);
+    fields_count = classfile->getu2();
+    // fields = parse_fields(field_handle);
+    methods_count = classfile->getu2();
+    // methods = parse_methods(method_handle);
+    attribute_count = classfile->getu2();
+    // attributes = parse_attributes(attribute_handle);
+    const char * path = classfile->path();
 }
