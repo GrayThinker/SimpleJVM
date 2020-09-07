@@ -317,6 +317,7 @@ struct Parseclass_format{
     attribute_info *attributes;  //[attributes_count]
 };
 
+//-------------------------------------------------------------
 struct code_attribute : attribute_info{
     // inherited
     // u2 attribute_name_index;
