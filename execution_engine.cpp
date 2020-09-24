@@ -7,17 +7,17 @@
 #include "class_structures.hpp"
 
 int execute(Frame* frame){
-    u1 * code; // get from frame
-    unsigned int pc = 0; // get from frame
-    Stack * stack; // get from frame
-    // locals
+    // u1 * code; // get from frame
+    // unsigned int pc = 0; // get from frame
+    // Stack * stack; // TODO: change to operand stack
+    // // locals
 
     while(true){
-        switch(code[pc++]){
+        switch((int) frame->code){
             case aaload:{
-                // int index = stack.pop();
-                // reference array_ref = stack.pop();
-                // stack.push(array_ref[index]);
+                int index = frame->stack->pop();
+                int* array_ref = std::hex << frame->stack->pop(); // should be type reference
+                frame->stack->push(array_ref[index]);
             } break;
             case aastore:{
                 // reference value = stack.pop();

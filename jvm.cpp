@@ -1,7 +1,9 @@
 #include "class_file_stream.hpp"
+#include "execution_engine.hpp"
 #include "class_types.hpp"
 #include "class_parser.hpp"
 #include "utils.hpp"
+#include "frame.hpp"
 #include <iostream>
 #include <memory>
 #include <string.h>
@@ -29,7 +31,10 @@ int main(int argc, char **argv){
 
     std::shared_ptr<Classfile_stream> code_stream(new Classfile_stream(classfile_path));
     std::shared_ptr<Parseclass> p_class(new Parseclass(code_stream.get()));
-    p_class->print_cp();
+    Frame f = Frame(&p_class->methods[0], p_class.get());
+    execute(&f);
+
+    // p_class->print_cp();
     
     return 0;
 }

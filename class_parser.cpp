@@ -1,6 +1,6 @@
 #include "class_types.hpp"
-#include "class_structures.hpp"
 #include "class_parser.hpp"
+#include "class_structures.hpp"
 #include "class_file_stream.hpp"
 #include <iostream>
 

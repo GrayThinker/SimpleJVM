@@ -8,7 +8,6 @@ class Parseclass : public Parseclass_format {
     public:  // change to constructor
     int _current;
 
-    // should they take class members as functions or modify them directly
     Parseclass(Classfile_stream *classfile);
     ~Parseclass();
     void parse_cp(u1 *cp_handle);
