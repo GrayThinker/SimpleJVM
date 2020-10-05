@@ -4,6 +4,10 @@ typedef unsigned char u1;   // one byte
 typedef unsigned short u2;  // two bytes
 typedef unsigned int u4;    // four bytes
 
+// const char * a_CONSTANTVALUE = "ConstantValue";
+// const char * a_CODE = "Code";
+
+
 #define size_u1 1
 #define size_u2 2
 #define size_u4 4

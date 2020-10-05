@@ -1,6 +1,8 @@
 #include "class_parser_v2.hpp"
 #include "class_structures.hpp"
+#include "class_types.hpp"
 #include <iostream>
+#include <string.h>
 
 cp_entry * Java_class::parse_constant_pool_entries(u1 *cp_handle, u2 cp_length){  //TODO: error check, return BOOL
     cp_entry *cp= new cp_entry[cp_length];
@@ -84,9 +86,7 @@ cp_entry * Java_class::parse_constant_pool_entries(u1 *cp_handle, u2 cp_length){
             case CONSTANT_Utf8:{
                 u2 length = get_u2(&cp_handle[cp_cur]); cp_cur += size_u2;
                 u1 *bytes = new u1[length];
-                for (int ii = 0; ii < length; ++ii){
-                    bytes[ii] = get_u1(&cp_handle[(cp_cur++) + ii]);
-                }
+                bytes = &cp_handle[cp_cur]; cp_cur += length;
                 temp.c_utf8 = CONSTANT_Utf8_info{
                     tag, length, bytes
                 };
@@ -169,10 +169,10 @@ void Java_class::print_cp(){  //FIXME: DRY
             <<" #"<<constant_pool[i].c_nameandtype.descriptor<<std::endl;
             break;
         case CONSTANT_Utf8:
-            std::cout<<"#"<<constant_pool[i].index<<" = Utf8\t";
-            // TODO: UTF8 conversion
-            // for (int i = 0; i < constant_pool[i].c_utf8.length; ++i)
-            //     std::cout<<constant_pool[i].c_utf8.bytes[i];
+            std::cout<<"#"<<constant_pool[i].index<<" = Utf8\t\t";
+            for (int j = 0; j < constant_pool[i].c_utf8.length; ++j){
+                std::cout << constant_pool[i].c_utf8.bytes[j];
+            }
             std::cout<<std::endl;
             break;
         case CONSTANT_MethodHandle:
@@ -200,12 +200,26 @@ void Java_class::parse_methods_ls(u1 * method_handle, u2 methods_count){
     temp_method.descriptor_index = get_u2(method_handle + mp); mp += size_u2;
     temp_method.attributes_count = get_u2(method_handle + mp); mp += size_u2;
     temp_method.attributes = new attribute_info[temp_method.attributes_count];
-    temp_method.attributes = parse_method_attr(method_handle + mp); // inc mp
+    // temp_method.attributes = parse_method_attr(method_handle + mp); // inc mp
 
 
 }
 
-void Java_class::parse_class(Classfile_stream *classfile){
+// void Java_class::parse_attr(u1 * attr_handle){
+//     int attr_cur = 0;
+//     u2 attr_name_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+//     u4 attr_length = get_u4(&attr_handle[attr_cur]); attr_cur += size_u4;
+    
+//     // parse_utf8
+//     CONSTANT_Utf8_info attr_name_info = constant_pool[attr_name_index].c_utf8;
+//     u1 * attr_name = new u1[attr_name_info.length];
+//     attr_name = attr_name_info.bytes;
+//     if (strcmp((const char *) attr_name, a_CONSTANTVALUE) == 0){
+//         //parse constant value attr
+//     }
+// }
+
+Java_class::Java_class(Classfile_stream *classfile){
     magic = classfile->read_u4();
     minor_version = classfile->read_u2();
     major_version = classfile->read_u2();

@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <string>
 #include "class_types.hpp"
 //TODO: rename to java_class_structures
 
@@ -98,6 +99,7 @@ struct CONSTANT_Utf8_info {
     u1 tag;
     u2 length;
     u1 *bytes;  //[length]
+    std::string name;
 };
 
 struct CONSTANT_MethodHandle_info{
@@ -146,16 +148,22 @@ struct cp_entry{
 };
 
 //------------------------------------------------------------
+struct StackMapTable_attribute{
+    u2 name_index;
+    u4 length;
+    u2 number_of_entries;
+    // stack_map_frame entries;
+};
 
 struct ConstantValue_attribute{
-    u2 attribute_name_index;
-    u4 attribute_length;
+    u2 name_index;
+    u4 length;
     u2 constantvalue_index;
 };
 
 struct Code_attribute{
-    u2 attribute_name_index;
-    u4 attribute_length;
+    u2 name_index;
+    u4 length;
     u2 max_stack;
     u2 max_locals;
     u4 code_length;
@@ -164,6 +172,252 @@ struct Code_attribute{
     exception *exception_table; //[exception_table_length]
     u2 attribute_count;
     attribute_info *attributes;  //[attributes_count]
+};
+
+struct Exceptions_attribute{
+    u2 name_index;
+    u4 length;
+    u2 number_of_exceptions;
+    // u2 * exception_index_table[number_of_exceptions];
+};
+
+struct InnerClasses_attribute{
+    u2 name_index;
+    u4 length;
+    u2 number_of_classes;
+    // classes[number_of_classes]
+    // { u2 inner_class_info_index;
+    //   u2 outer_class_info_index;
+    //   u2 inner_name_index;
+    //   u2 inner_class_access_flags;
+    // }
+};
+
+struct EnclosingMethod_attribute{
+    u2 name_index;
+    u4 length;
+    u2 class_index;
+    u2 method_index;
+
+};
+
+struct Synthetic_attribute{
+    u2 name_index;
+    u4 length;
+};
+
+struct Signature_attribute{
+    u2 name_index;
+    u4 length;
+    u2 signature_index;
+};
+
+struct SourceFile_attribute{
+    u2 name_index;
+    u4 length;
+    u2 sourcefile_index;
+};
+
+struct SourceDebugExtension_attribute{
+    u2 name_index;
+    u4 length;
+    // u1* debug_extension[attr_length]
+};
+
+struct LineNumberTable_attribute{
+    u2 name_index;
+    u4 length;
+    u2 line_line_number_table_length;
+    // { u2 start_pc;
+    //   u2 line_number;
+    // } line_number_table[line_number_table_length];
+};
+
+struct LocalVariableTable_attribute{
+    u2 name_index;
+    u4 length;
+    u2 local_var_table_length;
+    /*
+        { u2 start_pc;
+          u2 length;
+          u2 name_index;
+          u2 desc_index;
+          u2 index;
+        } local_var_table[local_var_table_length];
+    */
+};
+
+struct LocalVariableTypeTable_attribute{
+    u2 name_index;
+    u4 length;
+    u2 local_var_type_table_length;
+    /*
+        { u2 start_pc;
+          u2 length;
+          u2 name_index;
+          u2 signature_index;
+          u2 index;
+        } local_var_type_table[local_var_type_table_length];
+    */    
+};
+
+struct Deprecated_attribute{
+    u2 name_index;
+    u4 length;
+};
+
+struct RuntimeVisibleAnnotations_attribute{
+    u2 name_index;
+    u4 length;
+    u2 num_annotations;
+    // annotation annotations[num_annotations];
+    /*
+    annotation{
+        u2 type_index;
+        u2 num_element_value_pairs;
+        {   u2 element_name_index;
+            element_value value;
+        } element_value_pairs[num_element_value_pairs];
+    }
+    */
+};
+
+struct RuntimeInvisibleAnnotations_attribute{
+    u2 name_index;
+    u4 length;
+    u2 num_annotations;
+    //annotation annotations[num_annotations];
+};
+
+struct RuntimeVisibleParameterAnnotations_attribute{
+    u2 name_index;
+    u4 length;
+    u1 num_parameters;
+    /*
+    { u2 num_annotations;
+    annotation annotations[num_annotations];
+    } parameter_annotations[num_parameters];
+    */
+};
+
+struct RuntimeInvisibleParameterAnnotations_attribute{
+    u2 name_index;
+    u4 length;
+    u1 num_parameters;
+    /*
+    { u2 num_annotations;
+    annotation annotations[num_annotations];
+    } parameter_annotations[num_paramenters];
+    */
+};
+
+struct RuntimeVisibleTypeAnnotations_attribute{
+    u2 name_index;
+    u4 length;
+    u2 num_annotations;
+    // type_annotation annotations[num_annotations];
+};
+
+struct RuntimeInvisibleTypeAnnotations_attribute{
+    u2 name_index;
+    u4 length;
+    u2 num_annotations;
+    // type_annotation annotations;
+};
+
+struct AnnotationDefault_attribute{
+    u2 name_index;
+    u4 length;
+    // element_value default_value;
+};
+
+struct Bootstrap_attribute{
+    u2 name_index;
+    u4 length;
+    u2 num_bootstrap_methods;
+    /*
+    { u2 boostrap_method_ref;
+    u2 num_bootstrap_arguments;
+    u2 bootstrap_arguments[num_bootstrap_arguments];
+    } bootstrap_methods[num_bootstrap_methods];
+    */
+};
+
+struct MethodParameters_attribute{
+    u2 name_index;
+    u4 length;
+    u1 parameters_count;
+    // parameter * parameters;
+};
+
+union attribute{
+    ConstantValue_attribute constval_attr;
+    StackMapTable_attribute stackmap_attr;
+    Code_attribute code_attr;
+    Exceptions_attribute except_attr;
+    InnerClasses_attribute inclass_attr;
+    EnclosingMethod_attribute encmeth_attr;
+    Synthetic_attribute synth_attr;
+    Signature_attribute sign_attr;
+    SourceFile_attribute src_attr;
+    SourceDebugExtension_attribute srcdebext_attr;
+    LineNumberTable_attribute linenumtab_attr;
+    LocalVariableTable_attribute localvartab_attr;
+    LocalVariableTypeTable_attribute localvartype_attr;
+    Deprecated_attribute depr_attr;
+    RuntimeVisibleAnnotations_attribute runvisannot_attr;
+    RuntimeInvisibleAnnotations_attribute runinvannot_attr;
+    RuntimeVisibleParameterAnnotations_attribute runvispar_attr;
+    RuntimeInvisibleParameterAnnotations_attribute runinvpar_attr;
+    RuntimeVisibleTypeAnnotations_attribute runvistype_attr;
+    RuntimeInvisibleTypeAnnotations_attribute runinvtype_attr;
+    AnnotationDefault_attribute default_attr;
+    Bootstrap_attribute boot_attr;
+    MethodParameters_attribute mthdpar_attr;
+};
+
+//-------------------------------------------------
+
+struct parameter{
+    u2 name_index;
+    u2 access_flags;
+};
+
+//-------------------------------------------------
+
+struct type_parameter_target {
+    u1 type_parameter_index;
+};
+
+struct supertype_target {
+    u2 supertype_index;
+};
+
+struct type_parameter_bound_target{
+    u1 type_parameter_index;
+    u1 bound_index;
+};
+
+struct empty_target{};
+
+struct formal_parameter_target{
+    u1 formal_parameter_target;
+};
+
+
+struct type_annotation {
+    u1 target_type;
+    union {
+        type_parameter_target t_par_target;
+        supertype_target t_sup_target;
+    };
+    // type_path target_path;
+    // u2 type_index;
+    // u2 num_element_value_pairs;
+    // { u2 element_name_index;
+    // element_value value;
+    // } element_value_pairs[num_element_value_pairs];
+
 };
 
 //------------------------------------------------------------
@@ -271,14 +525,8 @@ union stack_map_frame{  //TODO: names
     struct full_frame;
 };
 
-struct StackMapTable_attribute{
-    u2 attribute_name_index;
-    u4 attribute_length;
-    u2 number_of_entries;
-    stack_map_frame entries; //[number_of_entries];
-};
-
 //------------------------------------------------------------
+
 struct Java_classfile_format{
     u4 magic;
     u2 minor_version;
@@ -318,20 +566,16 @@ struct Parseclass_format{
 };
 
 //-------------------------------------------------------------
-struct code_attribute {
-    u2 attribute_name_index;
-    u4 attribute_length;
-    u2 max_stack;
-    u2 max_locals;
-    u4 code_length;
-    u1* code;
-    u2 exception_table_length;
-    exception* exception_table;
-    u2 attributes_count;
-    attribute_info * attributes;
-};
-
-
-struct ConstantValue : attribute_info {
-    u2 constantvalue_index;
-};
+// TODO: DELETE
+// struct code_attribute {
+//     u2 attribute_name_index;
+//     u4 attribute_length;
+//     u2 max_stack;
+//     u2 max_locals;
+//     u4 code_length;
+//     u1* code;
+//     u2 exception_table_length;
+//     exception* exception_table;
+//     u2 attributes_count;
+//     attribute_info * attributes;
+// };

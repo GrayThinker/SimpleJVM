@@ -2,6 +2,7 @@
 #include "execution_engine.hpp"
 #include "class_types.hpp"
 #include "class_parser.hpp"
+#include "class_parser_v2.hpp"
 #include "utils.hpp"
 #include "frame.hpp"
 #include <iostream>
@@ -9,6 +10,7 @@
 #include <string>
 #include <vector>
 
+// flag for debugging mode
 
 void print_info(){
     int major_v = 0;
@@ -50,14 +52,18 @@ int main(int argc, char **argv){
         classfile_path = args.back().c_str();
     }
 
-
+    
     std::shared_ptr<Classfile_stream> code_stream(new Classfile_stream(classfile_path));
-    std::shared_ptr<Parseclass> p_class(new Parseclass(code_stream.get()));
+    std::shared_ptr<Java_class> jclass(new Java_class(code_stream.get()));
+    jclass.get()->print_cp();
+    
+    // std::shared_ptr<Parseclass> p_class(new Parseclass(code_stream.get()));
+
     // std::cout << "COMPLETED" << std::endl;
     // Frame f = Frame(&p_class->methods[0], p_class.get());
     // execute(&f);
 
-    p_class->print_cp();
+    // p_class->print_cp();
     
     return 0;
 }
