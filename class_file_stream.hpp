@@ -1,6 +1,7 @@
 #pragma once
 #include "class_types.hpp"
 #include <memory>
+#include <fstream>
 
 class Classfile_stream{
     private:
@@ -14,14 +15,17 @@ class Classfile_stream{
     public:
     Classfile_stream(const char *path);
     virtual ~Classfile_stream();
-    u4 getu4();
-    u2 getu2();
-    u1 getu1();
+
+    u4 read_u4();
+    u2 read_u2();
+    u1 read_u1();
+    
     u1 * get_current();
     int get_offset();
     void set_offset(int offset);
     void set_current(u1* current);
-    void get_size();
-    void open();
     const char * path();
+    
+    int get_size(const char * path);
+    void open();
 };

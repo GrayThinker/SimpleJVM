@@ -15,9 +15,9 @@ int execute(Frame* frame){
     while(true){
         switch((int) frame->code){
             case aaload:{
-                int index = frame->stack->pop();
-                int* array_ref = std::hex << frame->stack->pop(); // should be type reference
-                frame->stack->push(array_ref[index]);
+                // int index = frame->stack->pop();
+                // int* array_ref = std::hex << frame->stack->pop(); // should be type reference
+                // frame->stack->push(array_ref[index]);
             } break;
             case aastore:{
                 // reference value = stack.pop();
@@ -119,4 +119,5 @@ int execute(Frame* frame){
         }
 
     }
+    return 1;
 }

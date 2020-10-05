@@ -112,9 +112,13 @@ void Parseclass::print_cp(){
             case CONSTANT_MethodHandle:
                 std::cout<<"#"<<i<<" = MethodHandle\t\t"<<std::endl;
                 break;
-            case CONSTANT_Utf8:
-                std::cout<<"#"<<i<<" = Utf8\t\t"<<std::endl;
-                break;
+            case CONSTANT_Utf8:{
+                std::cout<<"#"<<i<<" = Utf8\t\t";
+                for (int i = 0; i < get_u2(&entry.info[0]); ++i){
+                    std::cout << get_u1(&entry.info[2 + i]);
+                }
+                std::cout << std::endl;
+            } break;
         }
     }
 }
@@ -160,45 +164,45 @@ Parseclass::Parseclass(Classfile_stream *classfile){
     _current = classfile->get_offset();
     
     // magic check
-    magic = classfile->getu4(); _current += size_u4;
+    magic = classfile->read_u4(); _current += size_u4;
     
     // version check -> pass to version checker function
-    minor_version = classfile->getu2(); _current += size_u2;
-    major_version = classfile->getu2(); _current += size_u2;
+    minor_version = classfile->read_u2(); _current += size_u2;
+    major_version = classfile->read_u2(); _current += size_u2;
     
-    constant_pool_count = classfile->getu2(); _current += size_u2;
+    constant_pool_count = classfile->read_u2(); _current += size_u2;
     if (constant_pool_count > 0){
         parse_cp(classfile->get_current());
         classfile->set_offset(_current);
     }
 
-    access_flags = classfile->getu2(); _current += size_u2;
-    this_class = classfile->getu2(); _current += size_u2;
-    super_class = classfile->getu2(); _current += size_u2; 
-    interfaces_count = classfile->getu2(); _current += size_u2;
+    access_flags = classfile->read_u2(); _current += size_u2;
+    this_class = classfile->read_u2(); _current += size_u2;
+    super_class = classfile->read_u2(); _current += size_u2; 
+    interfaces_count = classfile->read_u2(); _current += size_u2;
 
     if (interfaces_count > 0){ //maybe give it its own function
         interfaces = new u2[interfaces_count];
         for (int i = 0; i < interfaces_count; ++i){
-            interfaces[i] = classfile->getu2(); _current += size_u2;
+            interfaces[i] = classfile->read_u2(); _current += size_u2;
         }
     }
 
-    fields_count = classfile->getu2(); _current += size_u2;
+    fields_count = classfile->read_u2(); _current += size_u2;
     fields = new field_info[fields_count];
     for (int f; f < fields_count; ++f){
         _current += parse_fields(classfile->get_current(), fields + f);
         classfile->set_offset(_current);
     }
     
-    methods_count = classfile->getu2(); _current += size_u2;
+    methods_count = classfile->read_u2(); _current += size_u2;
     methods = new method_info[methods_count];
     for (int mthd = 0; mthd < methods_count; ++mthd){
         _current += parse_methods(classfile->get_current(), methods + mthd);
         classfile->set_offset(_current);
     }
     
-    attributes_count = classfile->getu2(); _current += size_u2;
+    attributes_count = classfile->read_u2(); _current += size_u2;
     attributes = new attribute_info[attributes_count];
     for (int attr = 0; attr < attributes_count; ++attr){
         _current += parse_attributes(classfile->get_current(), attributes + attr);

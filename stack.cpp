@@ -38,7 +38,7 @@ u4 Stack::pop(){
     }
 }
 
-void Stack::inc(unsigned int i = 1){
+void Stack::inc(unsigned int i){
     if (sp + i >= stack_size){
         std::cerr << "Stack Overflow" << std::endl;
     } else {
@@ -46,7 +46,7 @@ void Stack::inc(unsigned int i = 1){
     } //TODO: return bool
 }
 
-void Stack::dec(unsigned int i = 1){
+void Stack::dec(unsigned int i){
     if (sp < i){
         std::cerr << "Stack Underflow" <<std::endl;
     } else {

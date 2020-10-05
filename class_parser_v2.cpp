@@ -206,22 +206,22 @@ void Java_class::parse_methods_ls(u1 * method_handle, u2 methods_count){
 }
 
 void Java_class::parse_class(Classfile_stream *classfile){
-    magic = classfile->getu4();
-    minor_version = classfile->getu2();
-    major_version = classfile->getu2();
+    magic = classfile->read_u4();
+    minor_version = classfile->read_u2();
+    major_version = classfile->read_u2();
     // version verification: verify(min_ver, max_ver);
-    constant_pool_count = classfile->getu2();
+    constant_pool_count = classfile->read_u2();
     constant_pool = parse_constant_pool_entries(classfile->get_current(), constant_pool_count);
-    access_flags = classfile->getu2();
-    this_class = classfile->getu2();
-    super_class = classfile->getu2();
-    interfaces_count = classfile->getu2();
+    access_flags = classfile->read_u2();
+    this_class = classfile->read_u2();
+    super_class = classfile->read_u2();
+    interfaces_count = classfile->read_u2();
     // interfaces = parse_interfaces(interface_handle);
-    fields_count = classfile->getu2();
+    fields_count = classfile->read_u2();
     // fields = parse_fields(field_handle);
-    methods_count = classfile->getu2();
+    methods_count = classfile->read_u2();
     // methods = parse_methods(method_handle);
-    attribute_count = classfile->getu2();
+    attribute_count = classfile->read_u2();
     // attributes = parse_attributes(attribute_handle);
     const char * path = classfile->path();
 }

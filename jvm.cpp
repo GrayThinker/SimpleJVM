@@ -6,7 +6,9 @@
 #include "frame.hpp"
 #include <iostream>
 #include <memory>
-#include <string.h>
+#include <string>
+#include <vector>
+
 
 void print_info(){
     int major_v = 0;
@@ -19,22 +21,43 @@ void print_info(){
 }
 
 int main(int argc, char **argv){
-    //TODO: timing
+    std::vector<std::string> args;
     const char *classfile_path;
-    if (argc < 2){
-        classfile_path = ".\\test\\test2.class";
+
+    for (int i=1; i < argc; ++i){
+        args.push_back(argv[i]);
     }
-    // if (strcmp(argv[1], "-i") == 0){
-    //     print_info();
-    //     return 0;
-    // } else { classfile_path = argv[1]; }
+
+    if (args.size() < 1){ // no flags
+        classfile_path = ".\\test\\test2.class";
+    } 
+    else if (args.size() == 1){
+        classfile_path = args.back().c_str();
+    } 
+    else {
+        for (auto i = args.begin(); i != args.end() - 1; ++i){
+            switch (i->c_str()[1]){
+                case 'i':{
+                    print_info();
+                } break;
+                
+                default:{
+                    std::cerr << "Invalid flag\n";
+                    return 0;
+                }
+            }
+        }
+        classfile_path = args.back().c_str();
+    }
+
 
     std::shared_ptr<Classfile_stream> code_stream(new Classfile_stream(classfile_path));
     std::shared_ptr<Parseclass> p_class(new Parseclass(code_stream.get()));
-    Frame f = Frame(&p_class->methods[0], p_class.get());
-    execute(&f);
+    // std::cout << "COMPLETED" << std::endl;
+    // Frame f = Frame(&p_class->methods[0], p_class.get());
+    // execute(&f);
 
-    // p_class->print_cp();
+    p_class->print_cp();
     
     return 0;
 }

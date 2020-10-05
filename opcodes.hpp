@@ -119,7 +119,7 @@ enum Code{
     fmul,
     dmul,
     idiv,
-    ldiv,
+    ldiv_,
     fdiv,
     ddiv,
     irem,
