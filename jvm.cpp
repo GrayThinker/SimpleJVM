@@ -52,7 +52,7 @@ int main(int argc, char **argv){
         classfile_path = args.back().c_str();
     }
 
-    
+    std::cout << "Running...\n";
     std::shared_ptr<Classfile_stream> code_stream(new Classfile_stream(classfile_path));
     std::shared_ptr<Java_class> jclass(new Java_class(code_stream.get()));
     jclass.get()->print_cp();

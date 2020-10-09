@@ -7,25 +7,26 @@
 
 class Java_class : public Java_classfile_format {
     public:
-    Java_class(Classfile_stream *classfile);
+    int _current;
+    const char * path;
 
+    Java_class(Classfile_stream *classfile);
+    
     //constant pool parsing
-    cp_entry * parse_constant_pool_entries(u1 *cp_handle, u2 cp_length);
-    void print_cp();
-    u1 * parse_constant_pool();
+    int parse_cp_entry(u1* cp_handle, cp_entry * cp, int index);
 
     // interface parsing    
-    u2 * parse_interfaces();
+    int parse_interface(u1 * interface_handle, u1 * temp_interface);
     
     // field parsing
-    void parse_field_attr();
-    void parse_fields();
+    int parse_field(u1 * field_handle, field_info * temp_field);
 
-    void parse_attr(u1 * attr_handle);
+    // attribute parsing
+    int parse_attribute(u1 * attr_handle, attribute * temp_attr);
     
     // method parsing
-    void parse_methods_ls(u1 * method_handle, u2 methods_count);
-    attribute_info *parse_method_attr(u1* attr_handle);
-    void parse_method();
+    int parse_method(u1 * method_handle, method_info * temp_method);
+
+    void print_cp();
     void parse_exception_table();
 };

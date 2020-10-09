@@ -23,14 +23,6 @@ struct field_info{
 
 };
 
-struct method_info{
-    u2 access_flags;
-    u2 name_index;
-    u2 descriptor_index;
-    u2 attributes_count;
-    attribute_info *attributes;  //[attributes_count]
-};
-
 struct exception{
     u2 start_pc;
     u2 end_pc;
@@ -99,7 +91,7 @@ struct CONSTANT_Utf8_info {
     u1 tag;
     u2 length;
     u1 *bytes;  //[length]
-    std::string name;
+    // std::string name;
 };
 
 struct CONSTANT_MethodHandle_info{
@@ -127,8 +119,11 @@ struct CONSTANT_InvokeDynamic_info{
  */
 struct cp_entry{
     public:
+    cp_entry(){};
+    virtual ~cp_entry(){};
+    // cp_entry(cp_entry &cp2){cp2.index = index; cp2.tag = tag;}
+    u1 tag;
     u4 index;
-    u1 tag; 
     union {
         CONSTANT_Class_info c_class;
         CONSTANT_Fieldref_info c_fieldref;
@@ -376,6 +371,15 @@ union attribute{
     MethodParameters_attribute mthdpar_attr;
 };
 
+
+struct method_info{
+    u2 access_flags;
+    u2 name_index;
+    u2 descriptor_index;
+    u2 attributes_count;
+    attribute *attributes;  //[attributes_count]
+};
+
 //-------------------------------------------------
 
 struct parameter{
@@ -543,7 +547,7 @@ struct Java_classfile_format{
     u2 methods_count;
     method_info *methods;  //[methods_count;
     u2 attribute_count;
-    attribute_info attributes;  //[attributes_count]
+    attribute *attributes;  //[attributes_count]
 };
 
 struct Parseclass_format{
