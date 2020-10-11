@@ -3,6 +3,7 @@
 #include <string>
 #include "class_types.hpp"
 //TODO: rename to java_class_structures
+union attribute;
 
 struct cp_info{  //for reference only, use cp_entry
     u1 tag;
@@ -166,7 +167,7 @@ struct Code_attribute{
     u2 exception_table_length;
     exception *exception_table; //[exception_table_length]
     u2 attribute_count;
-    attribute_info *attributes;  //[attributes_count]
+    attribute *attributes;  //[attributes_count]
 };
 
 struct Exceptions_attribute{
@@ -222,7 +223,7 @@ struct SourceDebugExtension_attribute{
 struct LineNumberTable_attribute{
     u2 name_index;
     u4 length;
-    u2 line_line_number_table_length;
+    u2 line_number_table_length;
     // { u2 start_pc;
     //   u2 line_number;
     // } line_number_table[line_number_table_length];
