@@ -4,6 +4,7 @@
 #include "class_types.hpp"
 //TODO: rename to java_class_structures
 union attribute;
+union stack_map_frame;
 
 struct cp_info{  //for reference only, use cp_entry
     u1 tag;
@@ -148,7 +149,7 @@ struct StackMapTable_attribute{
     u2 name_index;
     u4 length;
     u2 number_of_entries;
-    // stack_map_frame entries;
+    stack_map_frame* entries;
 };
 
 struct ConstantValue_attribute{

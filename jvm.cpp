@@ -55,7 +55,7 @@ int main(int argc, char **argv){
     std::cout << "Running...\n";
     std::shared_ptr<Classfile_stream> code_stream(new Classfile_stream(classfile_path));
     std::shared_ptr<Java_class> jclass(new Java_class(code_stream.get()));
-    jclass.get()->print_cp();
+    // jclass.get()->print_cp();
     
     // std::shared_ptr<Parseclass> p_class(new Parseclass(code_stream.get()));
 

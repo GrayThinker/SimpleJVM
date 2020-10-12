@@ -192,13 +192,13 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
     attr_name = attr_name_info.bytes;
 
     // FIXME: try std::hash
-    if (strcmp((const char *) attr_name, "ConstantValue") == 0){
+    if (strcmp((const char *) attr_name, "ConstantValue\1") == 0){
         u2 constval_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->constval_attr = {attr_name_index, attr_length, constval_index};
         //TODO: need variable to keep track of which union type is initialized
     }
 
-    else if (strcmp((const char*) attr_name, "Code") == 0){
+    else if (strcmp((const char*) attr_name, "Code\1") == 0){
         u2 max_stack = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         u2 max_locals = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         u2 code_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
@@ -228,73 +228,76 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         };
     }
 
-    else if (strcmp((const char*) attr_name, "StackMapTable") == 0){
+    else if (strcmp((const char*) attr_name, "StackMapTable\1") == 0){
         u2 number_of_entries = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
-        // TODO: stack_map_frame
+        stack_map_frame * entries = new stack_map_frame[number_of_entries];
+        for(int i=0; i < number_of_entries; ++i){
+            
+        }
         temp_attr->stackmap_attr = {attr_name_index, attr_length, number_of_entries};
     }
 
-    else if (strcmp((const char *) attr_name, "Exceptions") == 0){
+    else if (strcmp((const char *) attr_name, "Exceptions\1") == 0){
         u2 number_of_exceptions = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: exception_index_table
         temp_attr->except_attr = {attr_name_index, attr_length, number_of_exceptions};
     }
 
-    else if(strcmp((const char*) attr_name, "InnerClasses") == 0){
+    else if(strcmp((const char*) attr_name, "InnerClasses\1") == 0){
         u2 number_of_classes = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: classes[number_of_classes]
         temp_attr->inclass_attr = {attr_name_index, attr_length, number_of_classes};
     }
 
-    else if(strcmp((const char *) attr_name, "EnclosingMethod") == 0){
+    else if(strcmp((const char *) attr_name, "EnclosingMethod\1") == 0){
         u2 class_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         u2 method_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->encmeth_attr = {attr_name_index, attr_length, class_index, method_index};
     }
 
-    else if(strcmp((const char *) attr_name, "Synthetic") == 0){
+    else if(strcmp((const char *) attr_name, "Synthetic\1") == 0){
         temp_attr->synth_attr = {attr_name_index, attr_length};
     }
 
-    else if(strcmp((const char *) attr_name, "Signature") == 0){
+    else if(strcmp((const char *) attr_name, "Signature\1") == 0){
         u2 signature_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->sign_attr = {attr_name_index, attr_length, signature_index};
     }
 
-    else if(strcmp((const char *) attr_name, "SourceFile") == 0){
+    else if(strcmp((const char *) attr_name, "SourceFile\1") == 0){
         u2 sourcefile_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->src_attr = {attr_name_index, attr_length, sourcefile_index};
     }
 
-    else if(strcmp((const char *) attr_name, "LineNumberTable") == 0){
+    else if(strcmp((const char *) attr_name, "LineNumberTable\1") == 0){
         u2 line_number_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: line_number_table
         temp_attr->linenumtab_attr = {attr_name_index, attr_length, line_number_table_length};
     }
 
-    else if(strcmp((const char *) attr_name, "LocalVariableTable") == 0){
+    else if(strcmp((const char *) attr_name, "LocalVariableTable\1") == 0){
         u2 local_var_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: local var table
         temp_attr->localvartab_attr = {attr_name_index, attr_length, local_var_table_length};
     }
 
-    else if(strcmp((const char *) attr_name, "LocalVariableTypeTable") == 0){
+    else if(strcmp((const char *) attr_name, "LocalVariableTypeTable\1") == 0){
         u2 local_var_type_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: local var type table
         temp_attr->localvartype_attr = {attr_name_index, attr_length, local_var_type_table_length};
     }
 
-    else if(strcmp((const char *) attr_name, "Deprecated") == 0){
+    else if(strcmp((const char *) attr_name, "Deprecated\1") == 0){
         temp_attr->depr_attr = {attr_name_index, attr_length};
     }
 
-    else if(strcmp((const char *) attr_name, "RuntimeVisibleAnnotations") == 0){
+    else if(strcmp((const char *) attr_name, "RuntimeVisibleAnnotations\1") == 0){
         u2 num_annotations = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: annotation
         temp_attr->runvisannot_attr = {attr_name_index, attr_length, num_annotations};
     }
 
-    else if(strcmp((const char *) attr_name, "RuntimeInvisibleAnnotations") == 0){
+    else if(strcmp((const char *) attr_name, "RuntimeInvisibleAnnotations\1") == 0){
         u2 num_annotations = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: annotation
         temp_attr->runinvannot_attr = {attr_name_index, attr_length, num_annotations};
@@ -352,25 +355,6 @@ Java_class::Java_class(Classfile_stream *classfile){
     }
 
     attribute_count = classfile->read_u2(); _current += size_u2;
-    
-    int attr_cur = 0;
-    u1 * handle = classfile->get_current();
-    u2 name_idx = get_u2(&handle[attr_cur]); attr_cur += size_u2;
-    u1 * name = new u1[constant_pool[name_idx -1].c_utf8.length];
-    name = constant_pool[name_idx -1].c_utf8.bytes;
-    const char *word = "<init>";
-    std::cout << "\n" << strcmp((const char *) name, word) << "\n\n";
-    // if(strcmp((const char *) name, "<init>") == 0){
-    //     std::cout << "\nYeah boi\n\n";
-    // }
-    // std::cout << "\nName index: " << name_idx << "\n\n";
-    for (int i = 0; i < constant_pool[name_idx -1].c_utf8.length; ++i)
-        std::cout << " " << i << " " << constant_pool[name_idx -1].c_utf8.bytes[i] << "\n";
-    std::cout << std::endl;
-    std::cout << strlen(word) << "\n";
-    std::cout << (int) name[5] << "\n";
-    std::cout << strlen((const char*) name) << "\n";
-
     if (attribute_count > 0){
         attributes = new attribute[attribute_count];
         for (int i = 0; i < attribute_count; ++i){
