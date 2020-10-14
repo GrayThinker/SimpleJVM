@@ -2,23 +2,23 @@
 
 enum Code{
     // Constants
-    nop = 0,
-    aconst_null,
+    nop = 0, //TODO:
+    aconst_null, //TODO:
     iconst_ml,
     iconst_0,
     iconst_1,
-    iconst_2,
+    iconst_2, //TODO:
     iconst_3,
-    iconst_4,
+    iconst_4, //TODO:
     iconst_5,
     lconst_0,
     lconst_1,
     fconst_0,
-    fconst_1,
-    fconst_2,
+    fconst_1, //TODO:
+    fconst_2, //TODO:
     dconst_0,
     dconst_1,
-    bipush,
+    bipush, //TODO:
     sipush,
     ldc,
     ldc_w,
@@ -31,8 +31,8 @@ enum Code{
     dload,
     aload,
     iload_0,
-    iload_1,
-    iload_2,
+    iload_1, //TODO:
+    iload_2, //TODO:
     iload_3,
     lload_0,
     lload_1,
@@ -66,8 +66,8 @@ enum Code{
     dstore,
     astore,
     istore_0,
-    istore_1,
-    istore_2,
+    istore_1, //TODO:
+    istore_2, //TODO:
     istore_3,
     lstore_0,
     lstore_1,
@@ -114,7 +114,7 @@ enum Code{
     lsub,
     fsub,
     dsub,
-    imul,
+    imul, //TODO:
     lmul,
     fmul,
     dmul,
@@ -175,7 +175,7 @@ enum Code{
     ifgt,
     ifle,
     if_icmpeq,
-    if_icmpne,
+    if_icmpne, //TODO:
     if_icmplt,
     if_icmpge,
     if_icmple,
@@ -193,15 +193,15 @@ enum Code{
     freturn,
     dreturn,
     areturn,
-    _return,
+    _return, //TODO:
 
     // References
     getstatic = 178,
     putstatic,
     getfield,
     putfield,
-    invokevirtual,
-    invokespecial,
+    invokevirtual, //TODO:
+    invokespecial, //TODO:
     invokestatic,
     invokeinterface,
     invokedynamic,

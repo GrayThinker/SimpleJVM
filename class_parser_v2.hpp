@@ -28,5 +28,6 @@ class Java_class : public Java_classfile_format {
     int parse_method(u1 * method_handle, method_info * temp_method);
 
     void print_cp();
+    void print_methods();
     void parse_exception_table();
 };

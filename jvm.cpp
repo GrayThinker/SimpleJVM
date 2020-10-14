@@ -53,10 +53,21 @@ int main(int argc, char **argv){
     }
 
     std::cout << "Running...\n";
-    std::shared_ptr<Classfile_stream> code_stream(new Classfile_stream(classfile_path));
-    std::shared_ptr<Java_class> jclass(new Java_class(code_stream.get()));
-    // jclass.get()->print_cp();
+    // std::shared_ptr<Classfile_stream> code_stream(new Classfile_stream(classfile_path));
+    // std::shared_ptr<Java_class> j_class(new Java_class(code_stream.get()));
+    // j_class.get()->print_cp();
     
+    // for(int i = 0; i < j_class.get()->methods[0].attributes[0].code_attr.code_length; ++i){
+    //     std::cout << (int) j_class.get()->methods[0].attributes->code_attr.code[i] << std::endl;
+    // }
+    // std::cout << "\n\n";
+    // for(int i = 0; i < j_class.get()->methods[1].attributes[0].code_attr.code_length; ++i){
+    // //     std::cout << i << " ";
+    //     std::cout << (int) j_class.get()->methods[1].attributes[0].code_attr.code[i] << std::endl;
+    // }
+    
+    Stack st = Stack(200);
+    st.push(INTEGER, 5);
     // std::shared_ptr<Parseclass> p_class(new Parseclass(code_stream.get()));
 
     // std::cout << "COMPLETED" << std::endl;

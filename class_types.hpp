@@ -4,6 +4,8 @@ typedef unsigned char u1;   // one byte
 typedef unsigned short u2;  // two bytes
 typedef unsigned int u4;    // four bytes
 
+enum Data_type{BYTE, SHORT, CHAR, INTEGER, FLOAT, LONG, DOUBLE, BOOLEAN, RETURN_ADDR, REFERENCE};
+
 // const char * a_CONSTANTVALUE = "ConstantValue";
 // const char * a_CODE = "Code";
 

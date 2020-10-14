@@ -3,7 +3,7 @@
 #include <string>
 #include "class_types.hpp"
 //TODO: rename to java_class_structures
-union attribute;
+struct attribute;
 union stack_map_frame;
 
 struct cp_info{  //for reference only, use cp_entry
@@ -175,19 +175,21 @@ struct Exceptions_attribute{
     u2 name_index;
     u4 length;
     u2 number_of_exceptions;
-    // u2 * exception_index_table[number_of_exceptions];
+    u2 * exception_index_table;
+};
+
+struct class_ {
+    u2 inner_class_info_index;
+    u2 outer_class_info_index;
+    u2 inner_name_index;
+    u2 inner_class_access_flags;
 };
 
 struct InnerClasses_attribute{
     u2 name_index;
     u4 length;
     u2 number_of_classes;
-    // classes[number_of_classes]
-    // { u2 inner_class_info_index;
-    //   u2 outer_class_info_index;
-    //   u2 inner_name_index;
-    //   u2 inner_class_access_flags;
-    // }
+    class_ *classes;
 };
 
 struct EnclosingMethod_attribute{
@@ -195,7 +197,6 @@ struct EnclosingMethod_attribute{
     u4 length;
     u2 class_index;
     u2 method_index;
-
 };
 
 struct Synthetic_attribute{
@@ -221,41 +222,46 @@ struct SourceDebugExtension_attribute{
     // u1* debug_extension[attr_length]
 };
 
+struct line_number_entry{
+    u2 start_pc;
+    u2 line_number;
+};
+
 struct LineNumberTable_attribute{
     u2 name_index;
     u4 length;
     u2 line_number_table_length;
-    // { u2 start_pc;
-    //   u2 line_number;
-    // } line_number_table[line_number_table_length];
+    line_number_entry * line_number_table;
+};
+
+struct local_var{
+    u2 start_pc;
+    u2 length;
+    u2 name_index;
+    u2 desc_index;
+    u2 index;
 };
 
 struct LocalVariableTable_attribute{
     u2 name_index;
     u4 length;
     u2 local_var_table_length;
-    /*
-        { u2 start_pc;
-          u2 length;
-          u2 name_index;
-          u2 desc_index;
-          u2 index;
-        } local_var_table[local_var_table_length];
-    */
+    local_var * local_var_table;
+};
+
+struct local_var_type{
+    u2 start_pc;
+    u2 length;
+    u2 name_index;
+    u2 signature_index;
+    u2 index;
 };
 
 struct LocalVariableTypeTable_attribute{
     u2 name_index;
     u4 length;
     u2 local_var_type_table_length;
-    /*
-        { u2 start_pc;
-          u2 length;
-          u2 name_index;
-          u2 signature_index;
-          u2 index;
-        } local_var_type_table[local_var_type_table_length];
-    */    
+    local_var_type *local_var_type_table;    
 };
 
 struct Deprecated_attribute{
@@ -263,27 +269,33 @@ struct Deprecated_attribute{
     u4 length;
 };
 
+struct element{
+    int value; //TODO: check correct implementation
+};
+
+struct element_value_pair{
+    u2 element_name_index;
+    element element_value;
+};
+
+struct annotation{
+    u2 type_index;
+    u2 num_element_value_pairs;
+    element_value_pair * element_value_pairs;
+};
+
 struct RuntimeVisibleAnnotations_attribute{
     u2 name_index;
     u4 length;
     u2 num_annotations;
-    // annotation annotations[num_annotations];
-    /*
-    annotation{
-        u2 type_index;
-        u2 num_element_value_pairs;
-        {   u2 element_name_index;
-            element_value value;
-        } element_value_pairs[num_element_value_pairs];
-    }
-    */
+    annotation *annotations;
 };
 
 struct RuntimeInvisibleAnnotations_attribute{
     u2 name_index;
     u4 length;
     u2 num_annotations;
-    //annotation annotations[num_annotations];
+    annotation *annotations;
 };
 
 struct RuntimeVisibleParameterAnnotations_attribute{
@@ -347,30 +359,60 @@ struct MethodParameters_attribute{
     // parameter * parameters;
 };
 
-union attribute{
-    ConstantValue_attribute constval_attr;
-    StackMapTable_attribute stackmap_attr;
-    Code_attribute code_attr;
-    Exceptions_attribute except_attr;
-    InnerClasses_attribute inclass_attr;
-    EnclosingMethod_attribute encmeth_attr;
-    Synthetic_attribute synth_attr;
-    Signature_attribute sign_attr;
-    SourceFile_attribute src_attr;
-    SourceDebugExtension_attribute srcdebext_attr;
-    LineNumberTable_attribute linenumtab_attr;
-    LocalVariableTable_attribute localvartab_attr;
-    LocalVariableTypeTable_attribute localvartype_attr;
-    Deprecated_attribute depr_attr;
-    RuntimeVisibleAnnotations_attribute runvisannot_attr;
-    RuntimeInvisibleAnnotations_attribute runinvannot_attr;
-    RuntimeVisibleParameterAnnotations_attribute runvispar_attr;
-    RuntimeInvisibleParameterAnnotations_attribute runinvpar_attr;
-    RuntimeVisibleTypeAnnotations_attribute runvistype_attr;
-    RuntimeInvisibleTypeAnnotations_attribute runinvtype_attr;
-    AnnotationDefault_attribute default_attr;
-    Bootstrap_attribute boot_attr;
-    MethodParameters_attribute mthdpar_attr;
+    enum Attr_types {
+        //TODO: make same as attr_name
+        constant_value,
+        stack_map,
+        code,
+        except,
+        inner_class,
+        enclosed_method,
+        synthetic,
+        signature,
+        source_file,
+        source_debug,
+        line_num_table,
+        local_variable_table,
+        local_variable_type_table,
+        deprecated,
+        run_visible_annotations,
+        run_invisible_annotations,
+        run_visible_parameter,
+        run_invisible_parameter,
+        run_visible_type,
+        run_invisible_type,
+        default_,
+        bootstrap,
+        method_parameter
+    };
+
+struct attribute{
+    Attr_types type;
+    union {
+        ConstantValue_attribute constval_attr;
+        StackMapTable_attribute stackmap_attr;
+        Code_attribute code_attr;
+        Exceptions_attribute except_attr;
+        InnerClasses_attribute inclass_attr;
+        EnclosingMethod_attribute encmeth_attr;
+        Synthetic_attribute synth_attr;
+        Signature_attribute sign_attr;
+        SourceFile_attribute src_attr;
+        SourceDebugExtension_attribute srcdebext_attr;
+        LineNumberTable_attribute linenumtab_attr;
+        LocalVariableTable_attribute localvartab_attr;
+        LocalVariableTypeTable_attribute localvartype_attr;
+        Deprecated_attribute depr_attr;
+        RuntimeVisibleAnnotations_attribute runvisannot_attr;
+        RuntimeInvisibleAnnotations_attribute runinvannot_attr;
+        RuntimeVisibleParameterAnnotations_attribute runvispar_attr;
+        RuntimeInvisibleParameterAnnotations_attribute runinvpar_attr;
+        RuntimeVisibleTypeAnnotations_attribute runvistype_attr;
+        RuntimeInvisibleTypeAnnotations_attribute runinvtype_attr;
+        AnnotationDefault_attribute default_attr;
+        Bootstrap_attribute boot_attr;
+        MethodParameters_attribute mthdpar_attr;
+    };
 };
 
 

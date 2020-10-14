@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string.h>
 
-int Java_class::parse_cp_entry(u1 *cp_handle, cp_entry *cp, int index){  //TODO: error check, return BOOL
+int Java_class::parse_cp_entry(u1 *cp_handle, cp_entry *cp, int index){
     int cp_cur = 0;
     u1 tag = get_u1(&cp_handle[cp_cur]); cp_cur+= 1;
     cp->tag = tag;
@@ -170,41 +170,59 @@ void Java_class::print_cp(){
 
 int Java_class::parse_method(u1 * method_handle, method_info * temp_method){
     int mp = 0;
+    // std::cout << "current at start of method: " << _current + mp << "\n";
     temp_method->access_flags = get_u2(method_handle + mp); mp += size_u2;
     temp_method->name_index = get_u2(method_handle + mp); mp += size_u2;
     temp_method->descriptor_index = get_u2(method_handle + mp); mp += size_u2;
     temp_method->attributes_count = get_u2(method_handle + mp); mp += size_u2;
     temp_method->attributes = new attribute[temp_method->attributes_count];
     for(int i = 0; i < temp_method->attributes_count; ++i){
+        // std::cout << "Called by method\n";
+        // std::cout << "Current: " << _current + mp << " + ";
         mp += parse_attribute(method_handle + mp, &temp_method->attributes[i]);
+        // std::cout << "after method: " << (int) _current + mp << "\n";
     }
     return mp;
 }
 
+void Java_class::print_methods(){
+    for(int i = 0; i < methods_count; ++i){
+        for(int j = 0; j < methods[i].attributes_count; ++j){
+            // methods[i].attributes[j]
+        }
+    }
+};
+
 int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
     int attr_cur = 0;
+    // std::cout << "CURRENT: " << std::hex << _current + attr_cur << "\n";
 
     u2 attr_name_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
     u4 attr_length = get_u4(&attr_handle[attr_cur]); attr_cur += size_u4;
+    // std::cout << "index: " << std::hex << attr_name_index << "\n";
+    // std::cout << "len: " << std::hex << attr_length << "\n";
     
+    // std::cout << attr_name_index << " ";
     CONSTANT_Utf8_info attr_name_info = constant_pool[attr_name_index - 1].c_utf8; // parse_utf8
     u1 * attr_name = new u1[attr_name_info.length];
     attr_name = attr_name_info.bytes;
-
+    std::cout << attr_name << std::endl;
     // FIXME: try std::hash
     if (strcmp((const char *) attr_name, "ConstantValue\1") == 0){
+        temp_attr->type = constant_value;
         u2 constval_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->constval_attr = {attr_name_index, attr_length, constval_index};
         //TODO: need variable to keep track of which union type is initialized
     }
 
     else if (strcmp((const char*) attr_name, "Code\1") == 0){
+        temp_attr->type = code;
         u2 max_stack = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         u2 max_locals = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
-        u2 code_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+        u4 code_length = get_u4(&attr_handle[attr_cur]); attr_cur += size_u4;
         u1 * code = new u1[code_length];
-        for(int i =0; i < code_length; ++i){
-            code[i] = get_u1(&attr_handle[attr_cur]); attr_cur += size_u1;
+        for(int i = 0; i < code_length; ++i){
+                code[i] = get_u1(&attr_handle[attr_cur]); attr_cur += size_u1;
         }
         u2 exception_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         exception *exception_table = new exception[exception_table_length];
@@ -229,80 +247,119 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
     }
 
     else if (strcmp((const char*) attr_name, "StackMapTable\1") == 0){
+        temp_attr->type = stack_map;
         u2 number_of_entries = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         stack_map_frame * entries = new stack_map_frame[number_of_entries];
         for(int i=0; i < number_of_entries; ++i){
-            
+            // TODO:
         }
-        temp_attr->stackmap_attr = {attr_name_index, attr_length, number_of_entries};
+        temp_attr->stackmap_attr = {attr_name_index, attr_length, number_of_entries, entries};
     }
 
     else if (strcmp((const char *) attr_name, "Exceptions\1") == 0){
+        temp_attr->type = except;
         u2 number_of_exceptions = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
-        // TODO: exception_index_table
-        temp_attr->except_attr = {attr_name_index, attr_length, number_of_exceptions};
+        u2 * exception_index_table = new u2[number_of_exceptions];
+        for(int i=0; i < number_of_exceptions; ++i){
+            exception_index_table[i] = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+        }
+        temp_attr->except_attr = {attr_name_index, attr_length, number_of_exceptions, exception_index_table};
     }
 
     else if(strcmp((const char*) attr_name, "InnerClasses\1") == 0){
+        temp_attr->type = inner_class;
         u2 number_of_classes = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
-        // TODO: classes[number_of_classes]
-        temp_attr->inclass_attr = {attr_name_index, attr_length, number_of_classes};
+        class_ *classes = new class_[number_of_classes];
+        for(int i=0; i < number_of_classes; ++i){
+            classes[i].inner_class_info_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            classes[i].outer_class_info_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            classes[i].inner_name_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            classes[i].inner_class_access_flags = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+        }
+        temp_attr->inclass_attr = {attr_name_index, attr_length, number_of_classes, classes};
     }
 
     else if(strcmp((const char *) attr_name, "EnclosingMethod\1") == 0){
+        temp_attr->type = enclosed_method;
         u2 class_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         u2 method_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->encmeth_attr = {attr_name_index, attr_length, class_index, method_index};
     }
 
     else if(strcmp((const char *) attr_name, "Synthetic\1") == 0){
+        temp_attr->type = synthetic;
         temp_attr->synth_attr = {attr_name_index, attr_length};
     }
 
     else if(strcmp((const char *) attr_name, "Signature\1") == 0){
+        temp_attr->type = signature;
         u2 signature_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->sign_attr = {attr_name_index, attr_length, signature_index};
     }
 
     else if(strcmp((const char *) attr_name, "SourceFile\1") == 0){
+        temp_attr->type = source_file;
         u2 sourcefile_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->src_attr = {attr_name_index, attr_length, sourcefile_index};
     }
 
     else if(strcmp((const char *) attr_name, "LineNumberTable\1") == 0){
+        temp_attr->type = line_num_table; //TODO: change name
         u2 line_number_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
-        // TODO: line_number_table
-        temp_attr->linenumtab_attr = {attr_name_index, attr_length, line_number_table_length};
+        line_number_entry *line_number_table = new line_number_entry[line_number_table_length];
+        for(int i=0; i < line_number_table_length; ++i){
+            line_number_table[i].start_pc = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            line_number_table[i].line_number = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+        }
+        temp_attr->linenumtab_attr = {attr_name_index, attr_length, line_number_table_length, line_number_table};
     }
 
     else if(strcmp((const char *) attr_name, "LocalVariableTable\1") == 0){
+        temp_attr->type = local_variable_table;
         u2 local_var_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
-        // TODO: local var table
-        temp_attr->localvartab_attr = {attr_name_index, attr_length, local_var_table_length};
+        local_var * local_var_table = new local_var[local_var_table_length];
+        for(int i=0; i < local_var_table_length; ++i){
+            local_var_table[i].start_pc = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            local_var_table[i].length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            local_var_table[i].name_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            local_var_table[i].desc_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            local_var_table[i].index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+        }
+        temp_attr->localvartab_attr = {attr_name_index, attr_length, local_var_table_length, local_var_table};
     }
 
     else if(strcmp((const char *) attr_name, "LocalVariableTypeTable\1") == 0){
+        temp_attr->type = local_variable_type_table;
         u2 local_var_type_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
-        // TODO: local var type table
-        temp_attr->localvartype_attr = {attr_name_index, attr_length, local_var_type_table_length};
+        local_var_type * local_var_type_table = new local_var_type[local_var_type_table_length];
+        for(int i=0; i < local_var_type_table_length; ++i){
+            local_var_type_table[i].start_pc = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            local_var_type_table[i].length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            local_var_type_table[i].name_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            local_var_type_table[i].signature_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+            local_var_type_table[i].index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
+        }
+        temp_attr->localvartype_attr = {attr_name_index, attr_length, local_var_type_table_length, local_var_type_table};
     }
 
     else if(strcmp((const char *) attr_name, "Deprecated\1") == 0){
+        temp_attr->type = deprecated;
         temp_attr->depr_attr = {attr_name_index, attr_length};
     }
 
     else if(strcmp((const char *) attr_name, "RuntimeVisibleAnnotations\1") == 0){
+        temp_attr->type = run_visible_annotations;
         u2 num_annotations = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: annotation
         temp_attr->runvisannot_attr = {attr_name_index, attr_length, num_annotations};
     }
 
     else if(strcmp((const char *) attr_name, "RuntimeInvisibleAnnotations\1") == 0){
+        temp_attr->type = run_invisible_annotations;
         u2 num_annotations = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: annotation
         temp_attr->runinvannot_attr = {attr_name_index, attr_length, num_annotations};
     }
-
     return attr_cur;
 }
 
@@ -349,8 +406,9 @@ Java_class::Java_class(Classfile_stream *classfile){
     if (methods_count > 0 ){
         methods = new method_info[methods_count];
         for(int i = 0; i < methods_count; ++i){
-        //     _current += parse_method(classfile->get_current(), &methods[i]);
-        //     classfile->set_offset(_current);
+            // std::cout << "Method " << i << "\n";
+            _current += parse_method(classfile->get_current(), &methods[i]);
+            classfile->set_offset(_current);
         }
     }
 
@@ -358,8 +416,8 @@ Java_class::Java_class(Classfile_stream *classfile){
     if (attribute_count > 0){
         attributes = new attribute[attribute_count];
         for (int i = 0; i < attribute_count; ++i){
-        // _current += parse_attribute(classfile->get_current(), &attributes[i]);
-        // classfile->set_offset(_current);
+            _current += parse_attribute(classfile->get_current(), &attributes[i]);
+            classfile->set_offset(_current);
         }
     }
 

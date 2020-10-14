@@ -1,63 +1,23 @@
 #include <iostream>
 #include "class_types.hpp"
 #include "stack.hpp"
+#include <vector>
 
 Stack::Stack(int stack_size){
     sp = 0;
-    stack = new u4[stack_size];
+    size = stack_size;
 }
 
 Stack::~Stack(){
-    delete stack;
 };
 
-int Stack::get_sp(){
-    return sp;
-}
-void Stack::set_sp(int i){
-    if (i > stack_size){
-        std::cerr << "Stack Overflow" << std::endl;
-    } else {
-    sp = i;
-    // TODO: return bool
-    }
-}
-u4 Stack::peek(){
-    return stack[sp];
-}
-void Stack::push(u4 input){ //Template needed
-    stack[sp++] = input;
-}
+void Stack::push(Data_type d_type, Data d_val){
+        stack.push_back({d_type, d_val});
+};
 
-u4 Stack::pop(){
-    if (sp < 1){
-        std::cerr << "Stack Underflow" << std::endl;
-        return 0;
-    } else {
-        return stack[sp--];
-    }
-}
+// template <typename T>
 
-void Stack::inc(unsigned int i){
-    if (sp + i >= stack_size){
-        std::cerr << "Stack Overflow" << std::endl;
-    } else {
-        sp += i;
-    } //TODO: return bool
-}
-
-void Stack::dec(unsigned int i){
-    if (sp < i){
-        std::cerr << "Stack Underflow" <<std::endl;
-    } else {
-        sp -= i;
-    } //TODO: return bool
-}
-
-void Stack::_goto(unsigned int i){
-    if (i > stack_size){
-        std::cerr << "Stack Overflow" << std::endl;
-    } else {
-        sp = i;
-    } //TODO: return bool
-}
+// void Stack::push(Data_type d_type, T d_val){
+//     stack.push_back({d_type, d_val});
+    // stack.push_back({Data_type, Data});
+// };
