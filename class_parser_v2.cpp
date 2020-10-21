@@ -1,6 +1,7 @@
 #include "class_parser_v2.hpp"
 #include "class_structures.hpp"
 #include "class_types.hpp"
+#include "utils.hpp"
 #include <iostream>
 #include <string.h>
 
@@ -146,10 +147,7 @@ void Java_class::print_cp(){
                 break;
             case CONSTANT_Utf8:
                 std::cout<<"#"<<constant_pool[i].index<<" = Utf8\t\t";
-                for (int j = 0; j < constant_pool[i].c_utf8.length; ++j){
-                    std::cout << constant_pool[i].c_utf8.bytes[j];
-                }
-                std::cout<<std::endl;
+                std::cout << utf_to_str(constant_pool[i].c_utf8.bytes, constant_pool[i].c_utf8.length) <<std::endl;
                 break;
             case CONSTANT_MethodHandle:
                 std::cout<<"#"<<constant_pool[i].index<<" = MethodHandle\t\t"
@@ -195,27 +193,22 @@ void Java_class::print_methods(){
 
 int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
     int attr_cur = 0;
-    // std::cout << "CURRENT: " << std::hex << _current + attr_cur << "\n";
 
     u2 attr_name_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
     u4 attr_length = get_u4(&attr_handle[attr_cur]); attr_cur += size_u4;
-    // std::cout << "index: " << std::hex << attr_name_index << "\n";
-    // std::cout << "len: " << std::hex << attr_length << "\n";
-    
-    // std::cout << attr_name_index << " ";
-    CONSTANT_Utf8_info attr_name_info = constant_pool[attr_name_index - 1].c_utf8; // parse_utf8
-    u1 * attr_name = new u1[attr_name_info.length];
-    attr_name = attr_name_info.bytes;
+
+    CONSTANT_Utf8_info attr_name_info = constant_pool[attr_name_index - 1].c_utf8;
+    std::string attr_name = utf_to_str(attr_name_info.bytes, attr_name_info.length);
     std::cout << attr_name << std::endl;
-    // FIXME: try std::hash
-    if (strcmp((const char *) attr_name, "ConstantValue\1") == 0){
+
+    if (attr_name == "ConstantValue"){
         temp_attr->type = constant_value;
         u2 constval_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->constval_attr = {attr_name_index, attr_length, constval_index};
         //TODO: need variable to keep track of which union type is initialized
     }
 
-    else if (strcmp((const char*) attr_name, "Code\1") == 0){
+    else if (attr_name == "Code"){
         temp_attr->type = code;
         u2 max_stack = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         u2 max_locals = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
@@ -246,7 +239,7 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         };
     }
 
-    else if (strcmp((const char*) attr_name, "StackMapTable\1") == 0){
+    else if (attr_name == "StackMapTable"){
         temp_attr->type = stack_map;
         u2 number_of_entries = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         stack_map_frame * entries = new stack_map_frame[number_of_entries];
@@ -256,7 +249,7 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         temp_attr->stackmap_attr = {attr_name_index, attr_length, number_of_entries, entries};
     }
 
-    else if (strcmp((const char *) attr_name, "Exceptions\1") == 0){
+    else if (attr_name == "Exceptions"){
         temp_attr->type = except;
         u2 number_of_exceptions = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         u2 * exception_index_table = new u2[number_of_exceptions];
@@ -266,7 +259,7 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         temp_attr->except_attr = {attr_name_index, attr_length, number_of_exceptions, exception_index_table};
     }
 
-    else if(strcmp((const char*) attr_name, "InnerClasses\1") == 0){
+    else if(attr_name == "InnerClasses"){
         temp_attr->type = inner_class;
         u2 number_of_classes = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         class_ *classes = new class_[number_of_classes];
@@ -279,31 +272,31 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         temp_attr->inclass_attr = {attr_name_index, attr_length, number_of_classes, classes};
     }
 
-    else if(strcmp((const char *) attr_name, "EnclosingMethod\1") == 0){
+    else if(attr_name == "EnclosingMethod"){
         temp_attr->type = enclosed_method;
         u2 class_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         u2 method_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->encmeth_attr = {attr_name_index, attr_length, class_index, method_index};
     }
 
-    else if(strcmp((const char *) attr_name, "Synthetic\1") == 0){
+    else if(attr_name == "Synthetic"){
         temp_attr->type = synthetic;
         temp_attr->synth_attr = {attr_name_index, attr_length};
     }
 
-    else if(strcmp((const char *) attr_name, "Signature\1") == 0){
+    else if(attr_name == "Signature"){
         temp_attr->type = signature;
         u2 signature_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->sign_attr = {attr_name_index, attr_length, signature_index};
     }
 
-    else if(strcmp((const char *) attr_name, "SourceFile\1") == 0){
+    else if(attr_name == "SourceFile"){
         temp_attr->type = source_file;
         u2 sourcefile_index = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         temp_attr->src_attr = {attr_name_index, attr_length, sourcefile_index};
     }
 
-    else if(strcmp((const char *) attr_name, "LineNumberTable\1") == 0){
+    else if(attr_name == "LineNumberTable"){
         temp_attr->type = line_num_table; //TODO: change name
         u2 line_number_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         line_number_entry *line_number_table = new line_number_entry[line_number_table_length];
@@ -314,7 +307,7 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         temp_attr->linenumtab_attr = {attr_name_index, attr_length, line_number_table_length, line_number_table};
     }
 
-    else if(strcmp((const char *) attr_name, "LocalVariableTable\1") == 0){
+    else if(attr_name == "LocalVariableTable"){
         temp_attr->type = local_variable_table;
         u2 local_var_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         local_var * local_var_table = new local_var[local_var_table_length];
@@ -328,7 +321,7 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         temp_attr->localvartab_attr = {attr_name_index, attr_length, local_var_table_length, local_var_table};
     }
 
-    else if(strcmp((const char *) attr_name, "LocalVariableTypeTable\1") == 0){
+    else if(attr_name == "LocalVariableTypeTable"){
         temp_attr->type = local_variable_type_table;
         u2 local_var_type_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         local_var_type * local_var_type_table = new local_var_type[local_var_type_table_length];
@@ -342,19 +335,19 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         temp_attr->localvartype_attr = {attr_name_index, attr_length, local_var_type_table_length, local_var_type_table};
     }
 
-    else if(strcmp((const char *) attr_name, "Deprecated\1") == 0){
+    else if(attr_name == "Deprecated"){
         temp_attr->type = deprecated;
         temp_attr->depr_attr = {attr_name_index, attr_length};
     }
 
-    else if(strcmp((const char *) attr_name, "RuntimeVisibleAnnotations\1") == 0){
+    else if(attr_name == "RuntimeVisibleAnnotations"){
         temp_attr->type = run_visible_annotations;
         u2 num_annotations = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: annotation
         temp_attr->runvisannot_attr = {attr_name_index, attr_length, num_annotations};
     }
 
-    else if(strcmp((const char *) attr_name, "RuntimeInvisibleAnnotations\1") == 0){
+    else if(attr_name == "RuntimeInvisibleAnnotations"){
         temp_attr->type = run_invisible_annotations;
         u2 num_annotations = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: annotation
@@ -388,9 +381,9 @@ Java_class::Java_class(Classfile_stream *classfile){
     if (interfaces > 0){
         interfaces = new u2[interfaces_count];
         for (int i = 0; i < interfaces_count; ++i){
-        // _current += parse_interface(interface_handle, &interfaces[i]);
-        // classfile->set_offset(_current);
+            interfaces[i] = classfile->read_u2();
         }
+        _current = classfile->get_offset();
     }
 
     fields_count = classfile->read_u2(); _current += size_u2;

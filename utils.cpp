@@ -11,6 +11,14 @@ void printi(int output){
     std::cout<<output<<std::endl;
 }
 
+std::string utf_to_str(u1* bytes, u2 length){
+    std::string str = "";
+    for(int i=0; i < length; ++i){
+        str += *(bytes + i);
+    }
+    return str;
+}
+
 // int utf_to_char(u1* input, std::string *output){
 //     int length;
 //     std::string temp;

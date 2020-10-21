@@ -8,7 +8,7 @@ class Frame{
     int _mp;
     method_info* _method;
     Java_class* _parent_class;
-    // Stack* _op_stack;
+    Stack* _op_stack;
     u4* _locals;
 
 //     public:

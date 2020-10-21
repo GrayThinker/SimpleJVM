@@ -1,23 +1,33 @@
 #include <iostream>
+#include "class_structures.hpp"
 #include "class_types.hpp"
 #include "stack.hpp"
 #include <vector>
 
 Stack::Stack(int stack_size){
     sp = 0;
-    size = stack_size;
+    max_size = stack_size;
 }
 
 Stack::~Stack(){
 };
 
-void Stack::push(Data_type d_type, Data d_val){
-        stack.push_back({d_type, d_val});
+
+int Stack::push(Value value){
+    // TODO: check sp
+    stack.push_back(value);
+    return ++sp;
 };
 
-// template <typename T>
+Data Stack::pop(){
+    // TODO: check sp
+    auto ret_val = stack.back();
+    stack.pop_back();
+    sp--;
+    return ret_val.data;
+}
 
-// void Stack::push(Data_type d_type, T d_val){
-//     stack.push_back({d_type, d_val});
-    // stack.push_back({Data_type, Data});
-// };
+Data Stack::peek(){
+    // TODO: check sp
+    return stack.back().data;
+}

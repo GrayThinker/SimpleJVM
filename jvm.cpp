@@ -3,6 +3,7 @@
 #include "class_types.hpp"
 #include "class_parser.hpp"
 #include "class_parser_v2.hpp"
+#include "class_heap.hpp"
 #include "utils.hpp"
 #include "frame.hpp"
 #include <iostream>
@@ -21,6 +22,12 @@ void print_info(){
     std::cout << "Developer: Joseph Shatti" << std::endl;
     std::cout << "Versions: " << major_v << "." << minor_v << std::endl << std::endl;
 }
+
+// void start_jvm(std::string classfile_path){
+//     Class_heap heap;
+//     Java_class *j_class;
+//     heap.load_class(classfile_path, j_class);
+// }
 
 int main(int argc, char **argv){
     std::vector<std::string> args;
@@ -52,9 +59,14 @@ int main(int argc, char **argv){
         classfile_path = args.back().c_str();
     }
 
-    std::cout << "Running...\n";
-    // std::shared_ptr<Classfile_stream> code_stream(new Classfile_stream(classfile_path));
-    // std::shared_ptr<Java_class> j_class(new Java_class(code_stream.get()));
+
+
+    
+    Class_heap heap;
+    Classfile_stream * code_stream = new Classfile_stream(classfile_path);
+    Java_class j_class(code_stream);
+    j_class.print_cp();
+    // heap.load_class(classfile_path, j_class.get());
     // j_class.get()->print_cp();
     
     // for(int i = 0; i < j_class.get()->methods[0].attributes[0].code_attr.code_length; ++i){
@@ -65,9 +77,8 @@ int main(int argc, char **argv){
     // //     std::cout << i << " ";
     //     std::cout << (int) j_class.get()->methods[1].attributes[0].code_attr.code[i] << std::endl;
     // }
-    
-    Stack st = Stack(200);
-    st.push(INTEGER, 5);
+
+
     // std::shared_ptr<Parseclass> p_class(new Parseclass(code_stream.get()));
 
     // std::cout << "COMPLETED" << std::endl;
