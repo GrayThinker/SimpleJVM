@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include <iostream>
 #include <string.h>
+#include "class_heap.hpp"
 
 Java_class::Java_class(){}
 
@@ -100,8 +101,7 @@ int Java_class::parse_cp_entry(u1 *cp_handle, cp_entry *cp, int index){
 }
 
 void Java_class::print_cp(){
-    std::cout<<"Parser 1"<<std::endl;
-    for (int i = 0; i < constant_pool_count; ++i){
+    for (int i = 1; i < constant_pool_count; ++i){
         // std::cout << constant_pool[i].tag;
         switch(constant_pool[i].tag){
             case CONSTANT_Class:  //{?
@@ -171,17 +171,13 @@ void Java_class::print_cp(){
 
 int Java_class::parse_method(u1 * method_handle, method_info * temp_method){
     int mp = 0;
-    // std::cout << "current at start of method: " << _current + mp << "\n";
     temp_method->access_flags = get_u2(method_handle + mp); mp += size_u2;
     temp_method->name_index = get_u2(method_handle + mp); mp += size_u2;
     temp_method->descriptor_index = get_u2(method_handle + mp); mp += size_u2;
     temp_method->attributes_count = get_u2(method_handle + mp); mp += size_u2;
     temp_method->attributes = new attribute[temp_method->attributes_count];
     for(int i = 0; i < temp_method->attributes_count; ++i){
-        // std::cout << "Called by method\n";
-        // std::cout << "Current: " << _current + mp << " + ";
         mp += parse_attribute(method_handle + mp, &temp_method->attributes[i]);
-        // std::cout << "after method: " << (int) _current + mp << "\n";
     }
     return mp;
 }
@@ -217,7 +213,7 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         u2 max_locals = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         u4 code_length = get_u4(&attr_handle[attr_cur]); attr_cur += size_u4;
         u1 * code = new u1[code_length];
-        for(int i = 0; i < code_length; ++i){
+        for(u4 i = 0; i < code_length; ++i){
                 code[i] = get_u1(&attr_handle[attr_cur]); attr_cur += size_u1;
         }
         u2 exception_table_length = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
@@ -347,14 +343,14 @@ int Java_class::parse_attribute(u1 * attr_handle, attribute * temp_attr){
         temp_attr->type = run_visible_annotations;
         u2 num_annotations = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: annotation
-        temp_attr->runvisannot_attr = {attr_name_index, attr_length, num_annotations};
+        // temp_attr->runvisannot_attr = {attr_name_index, attr_length, num_annotations};
     }
 
     else if(attr_name == "RuntimeInvisibleAnnotations"){
         temp_attr->type = run_invisible_annotations;
         u2 num_annotations = get_u2(&attr_handle[attr_cur]); attr_cur += size_u2;
         // TODO: annotation
-        temp_attr->runinvannot_attr = {attr_name_index, attr_length, num_annotations};
+        // temp_attr->runinvannot_attr = {attr_name_index, attr_length, num_annotations};
     }
     return attr_cur;
 }
@@ -381,7 +377,7 @@ Java_class::Java_class(Classfile_stream *classfile){
     super_class = classfile->read_u2(); _current += size_u2;
     
     interfaces_count = classfile->read_u2(); _current += size_u2;
-    if (interfaces > 0){
+    if (interfaces_count > 0){
         interfaces = new u2[interfaces_count];
         for (int i = 0; i < interfaces_count; ++i){
             interfaces[i] = classfile->read_u2();
@@ -390,7 +386,7 @@ Java_class::Java_class(Classfile_stream *classfile){
     }
 
     fields_count = classfile->read_u2(); _current += size_u2;
-    if (fields > 0){
+    if (fields_count > 0){
         fields = new field_info[fields_count];
         for(int i = 0; i < fields_count; ++i){
             // _current += parse_field(field_handle, &fields[i]);

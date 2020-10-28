@@ -5,6 +5,7 @@
 #include "class_heap.hpp"
 #include "utils.hpp"
 #include "frame.hpp"
+#include "stack.hpp"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -66,8 +67,15 @@ int main(int argc, char **argv){
     // Java_class j_class(code_stream);
     Java_class j_class;
     heap.load_class(classfile_path, &j_class);
-    j_class.print_cp();
+    // j_class.print_cp();
     heap.~Class_heap();
+
+    // std::vector<std::variant<Java_class *>> ls;
+    // ls.push_back(&j_class);
+    // auto v = ls.back();
+    // auto w = std::get<Java_class *>(v);
+    // w->print_cp();
+
     // heap.load_class(classfile_path, j_class.get());
     // j_class.get()->print_cp();
     

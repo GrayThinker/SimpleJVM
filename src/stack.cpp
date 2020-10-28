@@ -13,21 +13,21 @@ Stack::~Stack(){
 };
 
 
-int Stack::push(Value value){
+int Stack::push(data value){
     // TODO: check sp
     stack.push_back(value);
     return ++sp;
 };
 
-Data Stack::pop(){
+data Stack::pop(){
     // TODO: check sp
     auto ret_val = stack.back();
     stack.pop_back();
     sp--;
-    return ret_val.data;
+    return ret_val;
 }
 
-Data Stack::peek(){
+data Stack::peek(){
     // TODO: check sp
-    return stack.back().data;
+    return stack.back();
 }

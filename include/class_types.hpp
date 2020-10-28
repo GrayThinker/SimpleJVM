@@ -4,9 +4,14 @@ typedef unsigned char u1;   // one byte
 typedef unsigned short u2;  // two bytes
 typedef unsigned int u4;    // four bytes
 
-
-// const char * a_CONSTANTVALUE = "ConstantValue";
-// const char * a_CODE = "Code";
+typedef signed char j_byte;
+typedef signed short j_short;
+typedef signed int j_int;
+typedef signed long j_long;
+typedef unsigned short j_char;
+typedef bool j_bool;
+typedef float j_float;
+typedef double j_double;
 
 
 #define size_u1 1

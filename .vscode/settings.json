@@ -56,10 +56,14 @@
         "memory_resource": "cpp",
         "optional": "cpp",
         "string_view": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "variant": "cpp"
     },
     "cSpell.words": [
         "getu",
         "printi"
-    ]
+    ],
+    "files.exclude": {
+        "**/*.gch": false
+    }
 }

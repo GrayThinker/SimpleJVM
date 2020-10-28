@@ -3,40 +3,29 @@
 #include "class_types.hpp"
 #include "class_structures.hpp"
 #include <vector>
+#include <variant>
 
-enum Type {BYTE, SHORT, INTEGER, LONG, DOUBLE, CHAR, BOOLEAN, FLOAT, RETURN_ADDR, REFERENCE};
+/*
+create a class called generic container that has the basic enum Type
+union data and struct value.
+Then let stack, inherit from it and let operand stack and frame stack inherit from stack.
+Also let locals inherit from it and modify Type, data.
+*/
 
-union Data {
-    signed char as_byte;
-    signed short as_short;
-    signed int as_int;
-    signed long as_long;
-    unsigned short as_char;
-    bool as_bool;
-    float as_float;
-    double as_double;
-    u1 * as_returnAddr;
-    void * as_reference;
-};
 
-struct Value{
-    Type type;
-    Data data;
-};
-
+using data = std::variant<j_byte, j_short, j_int, j_long, j_char, j_bool, j_float, j_double>;
 class Stack{
     public:
-
     int sp;
     int max_size;
-    std::vector<Value> stack;
+    std::vector<data> stack;
 
     Stack(int stack_size);
     virtual ~Stack();  
 
-    int push(Value value);
-    Data pop();
-    Data peek();
+    int push(data value);
+    data pop();
+    data peek();
 
     // getters and setters for sp
 

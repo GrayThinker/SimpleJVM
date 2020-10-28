@@ -2,6 +2,7 @@
 #include <iostream>
 #include "utils.hpp"
 #include "class_types.hpp"
+#include "class_structures.hpp"
 
 void printh(int output){
     std::cout<< std::setw(8) << std::setfill('0') << std::hex <<output<<std::endl;
@@ -17,6 +18,10 @@ std::string utf_to_str(u1* bytes, u2 length){
         str += *(bytes + i);
     }
     return str;
+}
+
+std::string utfinfo_to_str(CONSTANT_Utf8_info info){
+    return utf_to_str(info.bytes, info.length);
 }
 
 // int utf_to_char(u1* input, std::string *output){

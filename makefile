@@ -7,7 +7,7 @@ SRC:=$(wildcard $(SRCDIR)/*.cpp)
 INC:=$(wildcard $(INCDIR)/*.hpp)
 OBJ:=$(SRC:$(SRCDIR)/%.cpp=$(OBJDIR)/%.o)
 
-PATHFLAGS=-I ./include
+PATHFLAGS=-I include
 CCFLAGS=-Wall -Wextra
 CC=g++
 TARGET=SJVM
@@ -18,8 +18,9 @@ $(TARGET): $(OBJ)
 
 $(OBJ): $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@echo $(CC) $<
-	@$(CC) -c $(CCFLAGS) $(PATHFLAGS) $< -o $@
+	@$(CC) -c -std=c++2a $(CCFLAGS) $(PATHFLAGS) $< -o $@
 
 clean:
 	@$(rm) .\$(OBJDIR)\*.o
+	@$(rm) .\$(INCDIR)\*.gch
 	@$(rm) .\$(TARGET).exe
